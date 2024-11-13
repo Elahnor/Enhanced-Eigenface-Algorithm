@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1071</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1071</width>
+    <height>680</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1071</width>
+    <height>680</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>ENHANCEMENT OF EIGENFACE ALGORITHM
+</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icon/AppIcon.png</normaloff>icon/AppIcon.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>10</y>
+      <width>870</width>
+      <height>560</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <widget class="QLabel" name="video_feed">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>870</width>
+       <height>560</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>171</width>
+      <height>630</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="styleSheet">
+        <string>
+            QFrame {
+                border: 2px solid #022052;
+            }
+        </string>
+    </property>
+    <widget class="QGroupBox" name="groupBox_4">
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>475</y>
+                <width>150</width>
+                <height>131</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>METRICS:</string>
+        </property>
+        <property name="styleSheet">
+            <string>
+            QGroupBox {
+                font-weight: bold;
+                color: #022052;
+            }
+            </string>
+        </property>
+        <property name="flat">
+            <bool>false</bool>
+        </property>
+        <property name="checkable">
+            <bool>false</bool>
+        </property>
+        <widget class="QCheckBox" name="infe_time_checkbox">
+            <property name="geometry">
+                <rect>
+                    <x>8</x>
+                    <y>90</y>
+                    <width>150</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Inference Time</string>
+            </property>
+            <property name="styleSheet">
+                <string>
+                    QCheckBox {
+                        color: #022052;
+                    }
+                </string>
+            </property>
+        </widget>
+        <widget class="QCheckBox" name="predict_confidence_checkbox">
+            <property name="geometry">
+                <rect>
+                    <x>8</x>
+                    <y>60</y>
+                    <width>150</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Confidence Level</string>
+            </property>
+            <property name="styleSheet">
+                <string>
+                    QCheckBox {
+                        color: #022052;
+                    }
+                </string>
+            </property>
+        </widget>
+        <widget class="QCheckBox" name="recog_time_checkbox">
+            <property name="geometry">
+                <rect>
+                    <x>8</x>
+                    <y>30</y>
+                    <width>150</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Recognition Time</string>
+            </property>
+            <property name="styleSheet">
+                <string>
+                    QCheckBox {
+                        color: #022052;
+                    }
+                </string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>330</y>
+       <width>150</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>PART OF THE FACE:</string>
+     </property>
+      <property name="styleSheet">
+        <string>
+        QGroupBox {
+            font-weight: bold;
+            color: #022052;
+        }
+        </string>
+      </property>
+     <widget class="QRadioButton" name="smile_rect_radio">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>90</y>
+        <width>130</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Mouth</string>
+      </property>
+      <property name="styleSheet">
+          <string>
+            QRadioButton {
+              color: #022052;
+            }
+          </string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">rect_radio_group</string>
+      </attribute>
+     </widget>
+     <widget class="QRadioButton" name="eye_rect_radio">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>60</y>
+        <width>130</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Eyes</string>
+      </property>
+      <property name="styleSheet">
+          <string>
+            QRadioButton {
+              color: #022052;
+            }
+          </string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">rect_radio_group</string>
+      </attribute>
+     </widget>
+     <widget class="QRadioButton" name="face_rect_radio">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>30</y>
+        <width>130</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Whole Face</string>
+      </property>
+      <property name="styleSheet">
+          <string>
+            QRadioButton {
+              color: #022052;
+            }
+          </string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">rect_radio_group</string>
+      </attribute>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+        <rect>
+        <x>10</x>
+        <y>15</y>
+        <width>150</width>
+        <height>160</height>
+        </rect>
+      </property>
+      <property name="title">
+        <string>ACTIONS:</string>
+      </property>
+      <property name="styleSheet">
+        <string>
+        QGroupBox {
+            font-weight: bold;
+            color: #022052;
+        }
+        </string>
+      </property>
+     <widget class="QPushButton" name="generate_dataset_btn">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>130</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Generate Dataset</string>
+      </property>
+      <property name="styleSheet">
+        <string>
+          QPushButton {
+            color: #022052;
+          }
+        </string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="train_dataset_btn">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>130</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Train Dataset</string>
+      </property>
+      <property name="styleSheet">
+        <string>
+          QPushButton {
+            color: #022052;
+          }
+        </string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="recognize_face_btn">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>130</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Recognize Face</string>
+      </property>
+      <property name="styleSheet">
+        <string>
+          QPushButton {
+            color: #022052;
+          }
+        </string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>185</y>
+       <width>150</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>ALGORITHMS:</string>
+     </property>
+     <property name="styleSheet">
+        <string>
+        QGroupBox {
+            font-weight: bold;
+            color: #022052;
+        }
+        </string>
+      </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <widget class="QRadioButton" name="lbph_algo_radio">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>90</y>
+        <width>150</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LBPH</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">algo_radio_group</string>
+      </attribute>
+      <property name="styleSheet">
+          <string>
+            QRadioButton {
+              color: #022052;
+            }
+          </string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="enhanced_eigen_algo_radio">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>60</y>
+        <width>150</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enhanced Eigenface</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">algo_radio_group</string>
+      </attribute>
+      <property name="styleSheet">
+          <string>
+            QRadioButton {
+              color: #022052;
+            }
+          </string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="eigen_algo_radio">
+        <property name="geometry">
+          <rect>
+            <x>8</x>
+            <y>30</y>
+            <width>150</width>
+            <height>22</height>
+          </rect>
+        </property>
+        <property name="text">
+          <string>Eigenface</string>
+        </property>
+        <property name="checked">
+          <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+          <string notr="true">algo_radio_group</string>
+        </attribute>
+        <property name="styleSheet">
+          <string>
+            QRadioButton {
+              color: #022052;
+            }
+          </string>
+        </property>
+      </widget>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>580</y>
+      <width>870</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="styleSheet">
+      <string>
+        QFrame {
+          border: 2px solid #022052;
+        }
+        QLabel {
+          border: none; 
+        }
+      </string>
+    </property>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>20</y>
+       <width>130</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Training Status:</string>
+     </property>
+      <property name="styleSheet">
+          <string>
+              QLabel {
+                  color: #022052;
+              }
+          </string>
+      </property>
+    </widget>
+    <widget class="QProgressBar" name="progress_bar_train">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>20</y>
+       <width>118</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="format">
+      <string>%p%</string>
+     </property>
+    </widget>
+    <widget class="QProgressBar" name="progress_bar_generate">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>20</y>
+       <width>118</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>20</y>
+       <width>130</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Generating Status:</string>
+     </property>
+      <property name="styleSheet">
+          <string>
+              QLabel {
+                  color: #022052;
+              }
+          </string>
+      </property>
+    </widget>
+    <widget class="QPushButton" name="exit_btn">
+     <property name="geometry">
+      <rect>
+       <x>740</x>
+       <y>15</y>
+       <width>87</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Exit</string>
+     </property>
+     <property name="styleSheet">
+        <string>
+          QPushButton {
+            font-weight: bold;
+            color: #022052;
+          }
+        </string>
+      </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>870</x>
+       <y>10</y>
+       <width>54</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::ImhNone</set>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menu_bar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1071</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="defaultUp">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+      <string>
+         QMenuBar {
+            background-color: #d5e5ff;
+            border-top: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            border-left: none;
+            border-right: none;
+            color: #022052;
+            font-weight: 600;
+         }
+      </string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>exit_btn</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>748</x>
+     <y>648</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>809</x>
+     <y>719</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <buttongroups>
+  <buttongroup name="algo_radio_group"/>
+  <buttongroup name="rect_radio_group"/>
+ </buttongroups>
+</ui>
