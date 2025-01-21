@@ -71,7 +71,7 @@ class EFR(QMainWindow):        # Main Application
         self.assign_algorithms()
 
     def start_timer(self):    
-        self.capture = cv2.VideoCapture(self.camera_id)
+        self.capture = cv2.VideoCapture(self.camera_id, cv2.CAP_DSHOW)
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
         self.timer = QtCore.QTimer()
@@ -339,9 +339,15 @@ class EFR(QMainWindow):        # Main Application
 
         for (x, y, w, h) in faces:
             roi_gray_original = self.get_gray_image()[y:y + h, x:x + w]
-            roi_color = self.image[y:y + h, x:y + w]
+            roi_color = self.image[y:y + h, x:x + w]
 
+            # Ensure that distance is calculated before use
             distance = self.calculate_distance(w)
+            
+            # Default distance check for invalid or None distance
+            if distance is None:
+                continue  # Skip this face if distance is not valid
+
             rectangle_color = (0, 255, 0)  # Default green rectangle
 
             if self.enhanced_eigen_algo_radio.isChecked():
@@ -374,8 +380,7 @@ class EFR(QMainWindow):        # Main Application
 
                     # Recognition Time
                     if self.recog_time_checkbox.isChecked() and (30 <= distance <= 60):  # Only show if distance is in range
-                        recognition_end_time = time.time()
-                        total_recognition_time = round(recognition_end_time - recognition_start_time, 4)
+                        total_recognition_time = round(time.time() - recognition_start_time, 4)
                         cv2.putText(self.image, f"Recognition Time: {total_recognition_time}s", (10, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 255, 0), thickness=2)
 
                     # Confidence Level (Customized per algorithm)
@@ -387,7 +392,6 @@ class EFR(QMainWindow):        # Main Application
                             # Standard Eigenface confidence level calculation
                             confidence_level = self.calculate_confidence_level(distance, enhanced=False)
                         confidence_text = f"Confidence Level: {confidence_level:.2f}%"
-                        # Adjusting the Y-coordinate to be below the recognition time
                         cv2.putText(self.image, confidence_text, (10, 60), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 255, 0), thickness=2)
                         print(f"Recognition Time: {recognition_time}s, Distance: {distance} cm, Confidence Level: {confidence_level:.2f}")
 
@@ -410,7 +414,7 @@ class EFR(QMainWindow):        # Main Application
             else:  
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), rectangle_color, 2)
 
-            if not self.enhanced_eigen_algo_radio.isChecked() or (distance >= 30 and distance <= 60):
+            if not self.enhanced_eigen_algo_radio.isChecked() or (30 <= distance <= 60):
                 distance_text = f"{distance} cm"
                 self.draw_text(distance_text, x + 50, y + h + 25, color=rectangle_color)
 
@@ -423,10 +427,13 @@ class EFR(QMainWindow):        # Main Application
             cv2.putText(self.image, text, (x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(0, 0, 255), thickness=2)
 
         # Recognition Time
-        if (self.eigen_algo_radio.isChecked() or self.enhanced_eigen_algo_radio.isChecked()) and self.recog_time_checkbox.isChecked() and (30 <= distance <= 60):
-            recognition_end_time = time.time()
-            total_recognition_time = round(recognition_end_time - recognition_start_time, 4)
-            cv2.putText(self.image, f"Recognition Time: {total_recognition_time}s", (10, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 255, 0), thickness=2)
+        if (self.eigen_algo_radio.isChecked() or self.enhanced_eigen_algo_radio.isChecked()) and self.recog_time_checkbox.isChecked():
+            if self.eigen_algo_radio.isChecked():  # Only for Eigenface Algorithm
+                total_recognition_time = round(time.time() - recognition_start_time, 4)
+                cv2.putText(self.image, f"Recognition Time: {total_recognition_time}s", (10, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 255, 0), thickness=2)
+            elif (30 <= distance <= 60):  # Check distance for Enhanced Eigenface Algorithm
+                total_recognition_time = round(time.time() - recognition_start_time, 4)
+                cv2.putText(self.image, f"Recognition Time: {total_recognition_time}s", (10, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 255, 0), thickness=2)
 
     def calculate_confidence_level(self, distance, enhanced=False):
         ideal_distance = 45
