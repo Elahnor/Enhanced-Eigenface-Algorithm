@@ -1,14 +1,14 @@
 import os
 import cv2
 
-def get_all_key_name_pairs():
+def get_all_key_name_pairs(dataset_folder="Original"):
     #Returns a dictionary of key-name pairs from the dataset folder structure
-    return dict([subfolder.split('-') for _, folders, _ in os.walk(os.path.join(os.getcwd(), "datasets")) for subfolder in folders])
+    return dict([subfolder.split('-') for _, folders, _ in os.walk(os.path.join(os.getcwd(), "Dataset", dataset_folder)) for subfolder in folders])
 
-def absolute_path_generator():
+def absolute_path_generator(dataset_folder="Original"):
     #Generates the absolute paths for images and their corresponding keys
     separator = "-"
-    for folder, folders, _ in os.walk(os.path.join(os.getcwd(),"datasets")):
+    for folder, folders, _ in os.walk(os.path.join(os.getcwd(), "Dataset", dataset_folder)):
         for subfolder in folders:
             subject_path = os.path.join(folder, subfolder)
             key, _ = subfolder.split(separator)
@@ -16,10 +16,10 @@ def absolute_path_generator():
                 absolute_path = os.path.join(subject_path, image)
                 yield absolute_path, key
 
-def get_labels_and_faces():
+def get_labels_and_faces(dataset_folder="Original"):
     #Retrieves the labels and corresponding grayscale face images
     labels, faces = [], []
-    for path, key in absolute_path_generator():
+    for path, key in absolute_path_generator(dataset_folder):
         faces.append(cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY))
         labels.append(int(key))
     return labels, faces
