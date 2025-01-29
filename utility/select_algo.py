@@ -12,13 +12,9 @@ def update_recognizer(self):
         self.face_recognizer = cv2.face.EigenFaceRecognizer_create()
     elif self.enhanced_eigen_algo_radio.isChecked():
         self.face_recognizer = cv2.face.EigenFaceRecognizer_create()
-    else:
-        self.face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 
 def assign_algorithms(self):        
     if self.eigen_algo_radio.isChecked():
         self.algorithm = "Eigenface Algorithm"
     elif self.enhanced_eigen_algo_radio.isChecked():
         self.algorithm = "Enhanced Eigenface Algorithm"
-    else:
-        self.algorithm = "LBPH"

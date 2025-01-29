@@ -14,7 +14,9 @@ def train_dataset(self):
         self.train_dataset_btn.setText("Training Dataset")
         os.makedirs("training", exist_ok=True)
 
-        labels, faces = get_labels_and_faces()
+        # Determine which dataset to use based on the selected algorithm
+        dataset_folder = "Enhanced" if self.enhanced_eigen_algo_radio.isChecked() else "Original"
+        labels, faces = get_labels_and_faces(dataset_folder)
 
         try:
             # Notify user that training has started
@@ -40,7 +42,6 @@ def train_dataset(self):
         # Reset buttons and progress bar
         self.eigen_algo_radio.setEnabled(True)
         self.enhanced_eigen_algo_radio.setEnabled(True)
-        self.lbph_algo_radio.setEnabled(True)
         self.progress_bar_train.setValue(0)
         self.train_dataset_btn.setChecked(False)
         self.train_dataset_btn.setText("Train Dataset")

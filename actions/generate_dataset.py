@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
 from utility.calculation import calculate_distance
 from utility.user_info import USER
+from objective.super_resolution import image_preprocess
 
 dataset_per_subject = 20
 current_path = None
@@ -17,8 +18,10 @@ def generate(ui):
             user = USER()
             user.exec_()
             name, key = user.get_name_key()
-            current_path = os.path.join(os.getcwd(), "datasets", str(key) + "-" + name)
+            current_path = os.path.join(os.getcwd(), "dataset", "Original", str(key) + "-" + name)
+            enhanced_path = os.path.join(os.getcwd(), "dataset", "Enhanced", str(key) + "-" + name)
             os.makedirs(current_path, exist_ok=True)
+            os.makedirs(enhanced_path, exist_ok=True)
             ui.start_timer()
             ui.generate_dataset_btn.setText("Generating")
         except:
@@ -35,7 +38,8 @@ def save_dataset(ui):
     """Saves dataset for each subject"""
     global current_path, dataset_per_subject
 
-    location = os.path.join(current_path, str(dataset_per_subject) + ".jpg")
+    original_location = os.path.join(current_path, str(dataset_per_subject) + ".png")
+    enhanced_location = os.path.join(os.getcwd(), "dataset", "Enhanced", os.path.basename(current_path), str(dataset_per_subject) + ".png")
 
     if dataset_per_subject < 1:
         msg = QMessageBox()
@@ -65,8 +69,14 @@ def save_dataset(ui):
                 distance = calculate_distance(w)
 
                 if 30 <= distance <= 60:
-                    cv2.imwrite(location, ui.resize_image(ui.get_gray_image()[y:y + h, x:x + w], 600, 600))
-                    file_name = os.path.basename(location)
+                    gray_image = ui.get_gray_image()[y:y + h, x:x + w]
+                    resized_image = ui.resize_image(gray_image, 300, 300)
+                    enhanced_image = image_preprocess(resized_image)
+
+                    cv2.imwrite(original_location, resized_image)
+                    cv2.imwrite(enhanced_location, enhanced_image)
+
+                    file_name = os.path.basename(original_location)
                     ui.draw_text(file_name, 20, 30)
                     dataset_per_subject -= 1
                     ui.progress_bar_generate.setValue(100 - dataset_per_subject * 2 % 100)

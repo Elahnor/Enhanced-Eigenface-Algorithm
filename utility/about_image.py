@@ -24,5 +24,5 @@ def pix_image(self, image):
     pixImage = QtGui.QImage(image, c, r, image.strides[0], qformat)
     return pixImage.rgbSwapped()
 
-def resize_image(self, image, width=600, height=600): 
+def resize_image(self, image, width=300, height=300): 
     return cv2.resize(image, (width,height), interpolation = cv2.INTER_CUBIC)
