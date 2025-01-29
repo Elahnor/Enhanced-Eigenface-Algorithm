@@ -363,28 +363,6 @@
      <property name="checkable">
       <bool>false</bool>
      </property>
-     <widget class="QRadioButton" name="lbph_algo_radio">
-      <property name="geometry">
-       <rect>
-        <x>8</x>
-        <y>90</y>
-        <width>150</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>LBPH</string>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">algo_radio_group</string>
-      </attribute>
-      <property name="styleSheet">
-          <string>
-            QRadioButton {
-              color: #022052;
-            }
-          </string>
-      </property>
      </widget>
      <widget class="QRadioButton" name="enhanced_eigen_algo_radio">
       <property name="geometry">

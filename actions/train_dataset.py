@@ -40,7 +40,6 @@ def train_dataset(self):
         # Reset buttons and progress bar
         self.eigen_algo_radio.setEnabled(True)
         self.enhanced_eigen_algo_radio.setEnabled(True)
-        self.lbph_algo_radio.setEnabled(True)
         self.progress_bar_train.setValue(0)
         self.train_dataset_btn.setChecked(False)
         self.train_dataset_btn.setText("Train Dataset")
