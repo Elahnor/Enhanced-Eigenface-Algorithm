@@ -363,7 +363,6 @@
      <property name="checkable">
       <bool>false</bool>
      </property>
-     </widget>
      <widget class="QRadioButton" name="enhanced_eigen_algo_radio">
       <property name="geometry">
        <rect>
