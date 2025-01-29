@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
 from utility.calculation import calculate_distance
 from utility.user_info import USER
-from enhanced_quality import enhance_image
+from objective.super_resolution import image_preprocess
 
 dataset_per_subject = 20
 current_path = None
@@ -70,8 +70,8 @@ def save_dataset(ui):
 
                 if 30 <= distance <= 60:
                     gray_image = ui.get_gray_image()[y:y + h, x:x + w]
-                    resized_image = ui.resize_image(gray_image, 600, 600)
-                    enhanced_image = enhance_image(resized_image)
+                    resized_image = ui.resize_image(gray_image, 300, 300)
+                    enhanced_image = image_preprocess(resized_image)
 
                     cv2.imwrite(original_location, resized_image)
                     cv2.imwrite(enhanced_location, enhanced_image)

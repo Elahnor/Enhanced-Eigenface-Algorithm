@@ -8,7 +8,10 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
     scaling_factor = get_scaling_factor_for_distance(distance)
     scaled_roi_gray = self.resize_image(roi_gray_original, int(600 * scaling_factor), int(600 * scaling_factor))
 
-    expected_size = (600, 600)
+    expected_size = (600, 600) 
+    
+    if self.eigen_algo_radio.isChecked():
+        expected_size = (300, 300) 
     scaled_roi_gray = cv2.resize(scaled_roi_gray, expected_size)
 
     if self.recognize_face_btn.isChecked() and (self.eigen_algo_radio.isChecked() or self.enhanced_eigen_algo_radio.isChecked()):

@@ -145,7 +145,7 @@ class EFR(QMainWindow):
     def pix_image(self, image):
         return pix_image(self, image)
 
-    def resize_image(self, image, width=600, height=600):
+    def resize_image(self, image, width=300, height=300):
         return resize_image(self, image, width, height)
 
     #DISPLAY INFORMATION
