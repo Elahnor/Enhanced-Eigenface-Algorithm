@@ -1,4 +1,5 @@
 import os
+import cv2
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox
 
@@ -54,3 +55,8 @@ def recognize(self):
     else:
         self.recognize_face_btn.setText("Recognize Face")
         self.stop_timer()
+
+        # Reset the image to TitleScreen.png
+        self.image = cv2.imread("icon/TitleScreen.png", 1)
+        self.modified_image = self.image.copy()
+        self.display()  # Update the display with the new image

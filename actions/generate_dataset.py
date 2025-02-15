@@ -56,6 +56,11 @@ def save_dataset(ui):
         ui.stop_timer()
         dataset_per_subject = 20
 
+        # Reset the image to TitleScreen.png
+        ui.image = cv2.imread("icon/TitleScreen.png", 1)
+        ui.modified_image = ui.image.copy()
+        ui.display()  # Update the display with the new image
+
     if ui.generate_dataset_btn.isChecked():
         ui.ret, ui.image = ui.capture.read()
         ui.image = cv2.flip(ui.image, 1)
@@ -79,7 +84,11 @@ def save_dataset(ui):
                     file_name = os.path.basename(original_location)
                     ui.draw_text(file_name, 20, 30)
                     dataset_per_subject -= 1
-                    ui.progress_bar_generate.setValue(100 - dataset_per_subject * 2 % 100)
+
+                    # Update progress bar
+                    total_images = 20  # Total number of images to capture
+                    progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
+                    ui.progress_bar_generate.setValue(progress_value)
                 else:
                     ui.draw_text("Please Move Closer or Farther.", 10, 30)
 

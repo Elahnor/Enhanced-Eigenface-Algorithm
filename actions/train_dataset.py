@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import QTimer
 
 from utility.get_info import get_labels_and_faces
 
@@ -10,7 +11,7 @@ def train_dataset(self):
     """Handles the training of the dataset."""
     if self.train_dataset_btn.isChecked():
         selected_algo_button = self.algo_radio_group.checkedButton()
-        self.progress_bar_train.setValue(0)
+        self.progress_bar_train.setValue(1)  # Start from 1%
         selected_algo_button.setEnabled(False)
         self.train_dataset_btn.setText("Stop Training")
         os.makedirs("training", exist_ok=True)
@@ -27,24 +28,40 @@ def train_dataset(self):
             msg.setWindowIcon(QtGui.QIcon("icon/AppIcon.png"))
             msg.exec_()
 
+            self.progress_timer = QTimer()
+            self.progress_timer.timeout.connect(lambda: update_progress(self))
+            self.progress_timer.start(100)  # Update progress every 100ms
+
             if self.enhanced_eigen_algo_radio.isChecked():
                 self.face_recognizer = cv2.face.EigenFaceRecognizer_create()
                 self.lbph_recognizer = cv2.face.LBPHFaceRecognizer_create()
 
-                self.face_recognizer.train(faces, np.array(labels))
-                self.lbph_recognizer.train(faces, np.array(labels))
+                # Train the first recognizer
+                for i in range(1, 51):
+                    self.face_recognizer.train(faces, np.array(labels))
+                    self.progress_bar_train.setValue(i)  # Incrementally update progress
+
+                # Train the second recognizer
+                for i in range(51, 101):
+                    self.lbph_recognizer.train(faces, np.array(labels))
+                    self.progress_bar_train.setValue(i)
 
             else:
                 self.face_recognizer = cv2.face.EigenFaceRecognizer_create()
-                self.face_recognizer.train(faces, np.array(labels))
+                for i in range(1, 101):
+                    self.face_recognizer.train(faces, np.array(labels))
+                    self.progress_bar_train.setValue(i)
+
+            self.progress_timer.stop()
 
             # Save trained dataset
             save_trained_dataset(self)
-            self.progress_bar_train.setValue(100)
-        
+
         except Exception as e:
             self.print_custom_error("Unable to Train the Dataset")
             print(f"Error during training: {e}")
+            self.progress_timer.stop()
+            self.progress_bar_train.setValue(0)
     else:
         # Reset buttons and progress bar
         self.eigen_algo_radio.setEnabled(True)
@@ -52,6 +69,14 @@ def train_dataset(self):
         self.progress_bar_train.setValue(0)
         self.train_dataset_btn.setChecked(False)
         self.train_dataset_btn.setText("Train Dataset")
+
+def update_progress(self):
+    """Gradually updates progress bar to ensure a smooth transition."""
+    current_value = self.progress_bar_train.value()
+    if current_value < 100:
+        self.progress_bar_train.setValue(current_value + 1)
+    else:
+        self.progress_timer.stop()
 
 def save_trained_dataset(self):
     """Saves the trained dataset."""
