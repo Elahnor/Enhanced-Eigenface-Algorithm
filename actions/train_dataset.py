@@ -12,7 +12,7 @@ def train_dataset(self):
         selected_algo_button = self.algo_radio_group.checkedButton()
         self.progress_bar_train.setValue(0)
         selected_algo_button.setEnabled(False)
-        self.train_dataset_btn.setText("Training Dataset")
+        self.train_dataset_btn.setText("Stop Training")
         os.makedirs("training", exist_ok=True)
 
         dataset_folder = "Enhanced" if self.enhanced_eigen_algo_radio.isChecked() else "Original"
