@@ -1,5 +1,8 @@
+import os
 import cv2
 import time
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMessageBox
 from utility.calculation import calculate_confidence_level, get_scaling_factor_for_distance
 from utility.get_info import get_all_key_name_pairs
 
@@ -16,6 +19,46 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
 
     if self.recognize_face_btn.isChecked() and (self.eigen_algo_radio.isChecked() or self.enhanced_eigen_algo_radio.isChecked()):
         try:
+            # Check if the dataset is trained
+            trained_model_path = "training/eigen_trained_dataset.yml"
+            enhanced_model_path = "training/enhanced_eigen_trained_dataset.yml"
+            lbph_model_path = "training/lbph_trained_dataset.yml"
+
+            if self.enhanced_eigen_algo_radio.isChecked():
+                if not (os.path.exists(enhanced_model_path) and os.path.exists(lbph_model_path)):
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setWindowTitle("Training Required")
+                    msg.setText("Please train the dataset first before recognizing faces.")
+                    msg.setStandardButtons(QMessageBox.Ok)
+                    msg.setWindowIcon(QIcon("icon/AppIcon.png"))
+                    msg.exec_()
+                    self.recognize_face_btn.setChecked(False)
+                    self.recognize_face_btn.setText("Recognize Face")
+                    # Stop the camera and display the TitleScreen image
+                    self.stop_timer()
+                    self.image = cv2.imread("icon/TitleScreen.png", 1)
+                    self.modified_image = self.image.copy()
+                    self.display()
+                    return recognition_times
+            else:
+                if not os.path.exists(trained_model_path):
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setWindowTitle("Training Required")
+                    msg.setText("Please train the dataset first before recognizing faces.")
+                    msg.setStandardButtons(QMessageBox.Ok)
+                    msg.setWindowIcon(QIcon("icon/AppIcon.png"))
+                    msg.exec_()
+                    self.recognize_face_btn.setChecked(False)
+                    self.recognize_face_btn.setText("Recognize Face")
+                    # Stop the camera and display the TitleScreen image
+                    self.stop_timer()
+                    self.image = cv2.imread("icon/TitleScreen.png", 1)
+                    self.modified_image = self.image.copy()
+                    self.display()
+                    return recognition_times
+
             prediction_start_time = time.time()
             predicted, _ = self.face_recognizer.predict(scaled_roi_gray)
             name = get_all_key_name_pairs().get(str(predicted))
@@ -45,7 +88,7 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
             recognition_times.append(recognition_time)
 
         except Exception as e:
-            self.print_custom_error("Unable to Predict due to")
+            self.print_custom_error("Facial Recognition Failed: Dataset Not Trained")
             print(e)
 
     if self.eye_rect_radio.isChecked():

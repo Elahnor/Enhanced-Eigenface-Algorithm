@@ -422,7 +422,7 @@
           </rect>
         </property>
         <property name="text">
-          <string>Note: Please Train for Every Algorithm before Facial Recognition</string>
+          <string>Note: Please Train for each Algorithm before Facial Recognition</string>
         </property>
         <property name="wordWrap">
           <bool>true</bool>

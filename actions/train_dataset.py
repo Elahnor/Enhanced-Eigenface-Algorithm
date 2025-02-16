@@ -11,10 +11,37 @@ def train_dataset(self):
     """Handles the training of the dataset."""
     if self.train_dataset_btn.isChecked():
         selected_algo_button = self.algo_radio_group.checkedButton()
-        self.progress_bar_train.setValue(1)  # Start from 1%
+        self.progress_bar_train.setValue(1)
         selected_algo_button.setEnabled(False)
         self.train_dataset_btn.setText("Stop Training")
         os.makedirs("training", exist_ok=True)
+
+        original_dataset_path = "dataset/Original"
+        enhanced_dataset_path = "dataset/Enhanced"
+
+        if self.eigen_algo_radio.isChecked() and not os.path.exists(original_dataset_path):
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Dataset Required")
+            msg.setText("Please generate dataset before performing dataset training.")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setWindowIcon(QtGui.QIcon("icon/AppIcon.png"))
+            msg.exec_()
+            self.train_dataset_btn.setChecked(False)
+            self.train_dataset_btn.setText("Train Dataset")
+            return
+
+        if self.enhanced_eigen_algo_radio.isChecked() and not os.path.exists(enhanced_dataset_path):
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Dataset Required")
+            msg.setText("Please generate dataset before performing dataset training.")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setWindowIcon(QtGui.QIcon("icon/AppIcon.png"))
+            msg.exec_()
+            self.train_dataset_btn.setChecked(False)
+            self.train_dataset_btn.setText("Train Dataset")
+            return
 
         dataset_folder = "Enhanced" if self.enhanced_eigen_algo_radio.isChecked() else "Original"
         labels, faces = get_labels_and_faces(dataset_folder)
@@ -30,18 +57,16 @@ def train_dataset(self):
 
             self.progress_timer = QTimer()
             self.progress_timer.timeout.connect(lambda: update_progress(self))
-            self.progress_timer.start(100)  # Update progress every 100ms
+            self.progress_timer.start(50)  # Update progress every 100ms
 
             if self.enhanced_eigen_algo_radio.isChecked():
                 self.face_recognizer = cv2.face.EigenFaceRecognizer_create()
                 self.lbph_recognizer = cv2.face.LBPHFaceRecognizer_create()
 
-                # Train the first recognizer
                 for i in range(1, 51):
                     self.face_recognizer.train(faces, np.array(labels))
-                    self.progress_bar_train.setValue(i)  # Incrementally update progress
+                    self.progress_bar_train.setValue(i)
 
-                # Train the second recognizer
                 for i in range(51, 101):
                     self.lbph_recognizer.train(faces, np.array(labels))
                     self.progress_bar_train.setValue(i)
@@ -53,8 +78,6 @@ def train_dataset(self):
                     self.progress_bar_train.setValue(i)
 
             self.progress_timer.stop()
-
-            # Save trained dataset
             save_trained_dataset(self)
 
         except Exception as e:
@@ -63,7 +86,6 @@ def train_dataset(self):
             self.progress_timer.stop()
             self.progress_bar_train.setValue(0)
     else:
-        # Reset buttons and progress bar
         self.eigen_algo_radio.setEnabled(True)
         self.enhanced_eigen_algo_radio.setEnabled(True)
         self.progress_bar_train.setValue(0)
