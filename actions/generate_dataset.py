@@ -2,12 +2,14 @@ import os
 import cv2
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QDialog
 from utility.calculation import calculate_distance
 from utility.user_info import USER
 from objective.super_resolution import image_preprocess
 
 dataset_per_subject = 20
 current_path = None
+
 def generate(ui):
     """Handles dataset generation"""
     global current_path, dataset_per_subject
@@ -16,18 +18,35 @@ def generate(ui):
         try:
             if ui.eigen_algo_radio.isChecked() or ui.enhanced_eigen_algo_radio.isChecked():
                 user = USER()
-                user.exec_()
+                result = user.exec_()
+
+                if result == QDialog.Rejected:
+                    ui.generate_dataset_btn.setChecked(False)
+                    return
+
+                if ui.eigen_algo_radio.isChecked():
+                    dataset_paths = [os.path.join(os.getcwd(), "dataset", "Sample")]
+                else:
+                    dataset_paths = [
+                        os.path.join(os.getcwd(), "dataset", "Original"),
+                        os.path.join(os.getcwd(), "dataset", "Enhanced")
+                    ]
+
+                if not user.validate_user_info(dataset_paths):
+                    ui.generate_dataset_btn.setChecked(False)
+                    return
+
                 name, key = user.get_name_key()
-                
+
                 if ui.eigen_algo_radio.isChecked():
                     current_path = os.path.join(os.getcwd(), "dataset", "Sample", str(key) + "-" + name)
                 else:
                     current_path = os.path.join(os.getcwd(), "dataset", "Original", str(key) + "-" + name)
                     enhanced_path = os.path.join(os.getcwd(), "dataset", "Enhanced", str(key) + "-" + name)
                     os.makedirs(enhanced_path, exist_ok=True)
-                
+
                 os.makedirs(current_path, exist_ok=True)
-                
+
                 ui.start_timer()
                 ui.generate_dataset_btn.setText("Generating")
             else:
@@ -41,7 +60,7 @@ def generate(ui):
             msg.exec_()
 
             ui.generate_dataset_btn.setChecked(False)
-
+            
 def save_dataset(ui):
     """Saves dataset for each subject"""
     global current_path, dataset_per_subject
@@ -77,40 +96,45 @@ def save_dataset(ui):
         if len(faces) != 1:
             ui.draw_text("No face found. Keep one person visible.", 10, 30, color=(0, 0, 255))
         else:
+            distance = None
             if ui.enhanced_eigen_algo_radio.isChecked():
                 for (x, y, w, h) in faces:
                     distance = calculate_distance(w)
-                    if 30 <= distance <= 60:
+                    if not (30 <= distance <= 60):
+                        cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                        ui.draw_text("Please Move Closer or Farther.", 10, 30, color=(0, 0, 255))
+
+            if len(faces) == 1 and (distance is None or (30 <= distance <= 60)):
+                ui.draw_text("Please Stay Still!", 10, 30, color=(0, 255, 0)) 
+
+                if ui.enhanced_eigen_algo_radio.isChecked():
+                    for (x, y, w, h) in faces:
+                        if 30 <= distance <= 60:
+                            gray_image = ui.get_gray_image()[y:y + h, x:x + w]
+                            resized_image = ui.resize_image(gray_image, 300, 300)
+                            enhanced_image = image_preprocess(resized_image)
+
+                            cv2.imwrite(original_location, resized_image)
+                            cv2.imwrite(enhanced_location, enhanced_image)
+
+                            file_name = f"Saving {os.path.basename(original_location)}"
+                            ui.draw_text(file_name, 10, 60)
+                            dataset_per_subject -= 1
+
+                            total_images = 20
+                            progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
+                            ui.progress_bar_generate.setValue(progress_value)
+                else:
+                    for (x, y, w, h) in faces:
                         gray_image = ui.get_gray_image()[y:y + h, x:x + w]
                         resized_image = ui.resize_image(gray_image, 300, 300)
-                        enhanced_image = image_preprocess(resized_image)
-
                         cv2.imwrite(original_location, resized_image)
-                        cv2.imwrite(enhanced_location, enhanced_image)
-
-                        file_name = os.path.basename(original_location)
-                        ui.draw_text(file_name, 20, 30)
+                        file_name = f"Saving {os.path.basename(original_location)}"
+                        ui.draw_text(file_name, 10, 60)
                         dataset_per_subject -= 1
 
                         total_images = 20
                         progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
                         ui.progress_bar_generate.setValue(progress_value)
-                    else:
-                        # Draw the rectangle in red
-                        cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                        # Draw the text in red
-                        ui.draw_text("Please Move Closer or Farther.", 10, 30, color=(0, 0, 255))
-            else:
-                for (x, y, w, h) in faces:
-                    gray_image = ui.get_gray_image()[y:y + h, x:x + w]
-                    resized_image = ui.resize_image(gray_image, 300, 300)
-                    cv2.imwrite(original_location, resized_image)
-                    file_name = os.path.basename(original_location)
-                    ui.draw_text(file_name, 20, 30)
-                    dataset_per_subject -= 1
-
-                    total_images = 20
-                    progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
-                    ui.progress_bar_generate.setValue(progress_value)
     
     ui.display()
