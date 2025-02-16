@@ -8,7 +8,7 @@ from utility.menu_info import MenuInfo
 from actions.generate_dataset import generate, save_dataset
 from actions.train_dataset import train_dataset
 from actions.recognize_face import read_dataset, recognize
-from utility.get_info import get_labels_and_faces, get_gray_image, get_faces, get_smiles, get_eyes
+from utility.get_info import get_labels_and_faces, get_gray_image, get_faces
 from utility.select_algo import algorithm_radio_changed, update_recognizer, assign_algorithms
 from utility.about_image import display, update_image, pix_image, resize_image
 from utility.timer import Timer
@@ -20,10 +20,8 @@ class EFR(QMainWindow):
         super(EFR, self).__init__()
         loadUi("mainwindow.ui", self)
         
-        # Classifiers, frontal face, eyes and smiles.
+        # Classifier for frontal face
         self.face_classifier = cv2.CascadeClassifier("classifiers/frontalface_default.xml") 
-        self.eye_classifier = cv2.CascadeClassifier("classifiers/eye.xml")
-        self.smile_classifier = cv2.CascadeClassifier("classifiers/smile.xml")
         
         # Variables
         self.camera_id = 0
@@ -53,11 +51,6 @@ class EFR(QMainWindow):
         # Timer instance
         self.timer_manager = Timer(self)
        
-        # Rectangle
-        self.face_rect_radio.setChecked(True)
-        self.eye_rect_radio.setChecked(False)
-        self.smile_rect_radio.setChecked(False)
-        
         # Events
         self.generate_dataset_btn.clicked.connect(self.generate)
         self.train_dataset_btn.clicked.connect(self.train)
@@ -106,14 +99,6 @@ class EFR(QMainWindow):
     def get_faces(self):  
         faces = get_faces(self.image, self.face_classifier)
         return faces
-
-    def get_smiles(self, roi_gray): 
-        smiles = get_smiles(roi_gray, self.smile_classifier)
-        return smiles
-
-    def get_eyes(self, roi_gray):
-        eyes = get_eyes(roi_gray, self.eye_classifier)
-        return eyes
         
     #ALGORITHMS SECTION
     def algorithm_radio_changed(self):      

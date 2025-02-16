@@ -91,19 +91,10 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
             self.print_custom_error("Facial Recognition Failed: Dataset Not Trained")
             print(e)
 
-    if self.eye_rect_radio.isChecked():
-        eyes = self.get_eyes(roi_gray_original)
-        for (ex, ey, ew, eh) in eyes:
-            cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+    # Draw rectangle around the face
+    cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    elif self.smile_rect_radio.isChecked():
-        smiles = self.get_smiles(roi_gray_original)
-        for (sx, sy, sw, sh) in smiles:
-            cv2.rectangle(roi_color, (sx, sy), (sx + sw, sy + sh), (0, 255, 0), 2)
-
-    else:
-        cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
+    # Display distance text
     if not self.enhanced_eigen_algo_radio.isChecked() or (30 <= distance <= 60):
         distance_text = f"{distance} cm"
         self.draw_text(distance_text, x + 50, y + h + 25, color=(0, 255, 0))
