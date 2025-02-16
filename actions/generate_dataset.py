@@ -31,11 +31,14 @@ def generate(ui):
                         os.path.join(os.getcwd(), "dataset", "Original"),
                         os.path.join(os.getcwd(), "dataset", "Enhanced")
                     ]
+                    
+                for path in dataset_paths:
+                    os.makedirs(path, exist_ok=True)
 
                 if not user.validate_user_info(dataset_paths):
                     ui.generate_dataset_btn.setChecked(False)
                     return
-
+                
                 name, key = user.get_name_key()
 
                 if ui.eigen_algo_radio.isChecked():
