@@ -5,10 +5,12 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog
 from utility.calculation import calculate_distance
 from utility.user_info import USER
+from utility.movement import detect_movement 
 from objective.super_resolution import image_preprocess
 
 dataset_per_subject = 20
 current_path = None
+previous_frame = None  
 
 def generate(ui):
     """Handles dataset generation"""
@@ -63,10 +65,10 @@ def generate(ui):
             msg.exec_()
 
             ui.generate_dataset_btn.setChecked(False)
-            
+
 def save_dataset(ui):
-    """Saves dataset for each subject"""
-    global current_path, dataset_per_subject
+    """Saves dataset for each subject and handles movement detection."""
+    global current_path, dataset_per_subject, previous_frame
 
     original_location = os.path.join(current_path, str(dataset_per_subject) + ".png")
     enhanced_location = os.path.join(os.getcwd(), "dataset", "Enhanced", os.path.basename(current_path), str(dataset_per_subject) + ".png")
@@ -94,32 +96,51 @@ def save_dataset(ui):
         ui.ret, ui.image = ui.capture.read()
         ui.image = cv2.flip(ui.image, 1)
         faces = ui.get_faces()
-        ui.draw_rectangle(faces)
 
-        if len(faces) != 1:
-            ui.draw_text("No face found. Keep one person visible.", 10, 30, color=(0, 0, 255))
+        if previous_frame is not None and detect_movement(ui.image, previous_frame):
+            ui.draw_text("Please Stop Moving!", 10, 30, color=(0, 0, 255))
+            ui.draw_text("Generating Dataset in Progress.", 10, 60, color=(0, 0, 255))
+            for (x, y, w, h) in faces:
+                cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)  
         else:
-            distance = None
-            if ui.enhanced_eigen_algo_radio.isChecked():
-                for (x, y, w, h) in faces:
-                    distance = calculate_distance(w)
-                    if not (30 <= distance <= 60):
-                        cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                        ui.draw_text("Please Move Closer or Farther.", 10, 30, color=(0, 0, 255))
+            ui.draw_rectangle(faces)  
 
-            if len(faces) == 1 and (distance is None or (30 <= distance <= 60)):
-                ui.draw_text("Please Stay Still!", 10, 30, color=(0, 255, 0)) 
-
+            if len(faces) != 1:
+                ui.draw_text("No face found. Keep one person visible.", 10, 30, color=(0, 0, 255))
+            else:
+                distance = None
                 if ui.enhanced_eigen_algo_radio.isChecked():
                     for (x, y, w, h) in faces:
-                        if 30 <= distance <= 60:
+                        distance = calculate_distance(w)
+                        if not (30 <= distance <= 60):
+                            cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                            ui.draw_text("Please Move Closer or Farther.", 10, 30, color=(0, 0, 255))
+
+                if len(faces) == 1 and (distance is None or (30 <= distance <= 60)):
+                    ui.draw_text("Please Stay Still!", 10, 30, color=(0, 255, 0)) 
+
+                    if ui.enhanced_eigen_algo_radio.isChecked():
+                        for (x, y, w, h) in faces:
+                            if 30 <= distance <= 60:
+                                gray_image = ui.get_gray_image()[y:y + h, x:x + w]
+                                resized_image = ui.resize_image(gray_image, 300, 300)
+                                enhanced_image = image_preprocess(resized_image)
+
+                                cv2.imwrite(original_location, resized_image)
+                                cv2.imwrite(enhanced_location, enhanced_image)
+
+                                file_name = f"Saving {os.path.basename(original_location)}"
+                                ui.draw_text(file_name, 10, 60)
+                                dataset_per_subject -= 1
+
+                                total_images = 20
+                                progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
+                                ui.progress_bar_generate.setValue(progress_value)
+                    else:
+                        for (x, y, w, h) in faces:
                             gray_image = ui.get_gray_image()[y:y + h, x:x + w]
                             resized_image = ui.resize_image(gray_image, 300, 300)
-                            enhanced_image = image_preprocess(resized_image)
-
                             cv2.imwrite(original_location, resized_image)
-                            cv2.imwrite(enhanced_location, enhanced_image)
-
                             file_name = f"Saving {os.path.basename(original_location)}"
                             ui.draw_text(file_name, 10, 60)
                             dataset_per_subject -= 1
@@ -127,17 +148,6 @@ def save_dataset(ui):
                             total_images = 20
                             progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
                             ui.progress_bar_generate.setValue(progress_value)
-                else:
-                    for (x, y, w, h) in faces:
-                        gray_image = ui.get_gray_image()[y:y + h, x:x + w]
-                        resized_image = ui.resize_image(gray_image, 300, 300)
-                        cv2.imwrite(original_location, resized_image)
-                        file_name = f"Saving {os.path.basename(original_location)}"
-                        ui.draw_text(file_name, 10, 60)
-                        dataset_per_subject -= 1
 
-                        total_images = 20
-                        progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
-                        ui.progress_bar_generate.setValue(progress_value)
-    
+    previous_frame = ui.image.copy()
     ui.display()
