@@ -1,3 +1,5 @@
+# generate_dataset.py
+
 import os
 import cv2
 from PyQt5.QtWidgets import QMessageBox
@@ -5,8 +7,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog
 from utility.calculation import calculate_distance
 from utility.user_info import USER
-from utility.movement import detect_movement 
-from objective.super_resolution import image_preprocess
+from utility.movement import detect_movement
+from objective.super_resolution import image_preprocess, is_real_face
 
 dataset_per_subject = 20
 current_path = None
@@ -126,6 +128,29 @@ def save_dataset(ui):
                                 resized_image = ui.resize_image(gray_image, 300, 300)  # 300x300 for enhanced
                                 enhanced_image = image_preprocess(resized_image)
 
+                                # Check if it's a real face using the is_real_face function
+                                if not is_real_face(resized_image):
+                                    # Show a message box when a fake image is detected
+                                    msg = QMessageBox()
+                                    msg.setIcon(QMessageBox.Warning)
+                                    msg.setText("Invalid Face Images. Please Try Again!")
+                                    msg.setWindowTitle("Face Validation Failed")
+                                    msg.setWindowIcon(QIcon("icon/AppIcon.png"))
+                                    msg.setStandardButtons(QMessageBox.Ok)
+                                    msg.exec_()
+
+                                    ui.generate_dataset_btn.setText("Generate Dataset")
+                                    ui.generate_dataset_btn.setChecked(False)
+                                    ui.stop_timer()
+
+                                    # Reset to Title screen after stopping the process
+                                    ui.image = cv2.imread("icon/TitleScreen.png", 1)
+                                    ui.modified_image = ui.image.copy()
+                                    ui.display()
+
+                                    return  # Stop the dataset generation process
+
+                                # Save the images if the face is valid
                                 cv2.imwrite(original_location, resized_image)
                                 cv2.imwrite(enhanced_location, enhanced_image)
 
