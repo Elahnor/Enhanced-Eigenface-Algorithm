@@ -8,26 +8,34 @@ from objective.super_resolution import image_preprocess
 
 dataset_per_subject = 20
 current_path = None
-
 def generate(ui):
     """Handles dataset generation"""
     global current_path, dataset_per_subject
 
     if ui.generate_dataset_btn.isChecked():
         try:
-            user = USER()
-            user.exec_()
-            name, key = user.get_name_key()
-            current_path = os.path.join(os.getcwd(), "dataset", "Original", str(key) + "-" + name)
-            enhanced_path = os.path.join(os.getcwd(), "dataset", "Enhanced", str(key) + "-" + name)
-            os.makedirs(current_path, exist_ok=True)
-            os.makedirs(enhanced_path, exist_ok=True)
-            ui.start_timer()
-            ui.generate_dataset_btn.setText("Generating")
+            if ui.eigen_algo_radio.isChecked() or ui.enhanced_eigen_algo_radio.isChecked():
+                user = USER()
+                user.exec_()
+                name, key = user.get_name_key()
+                
+                if ui.eigen_algo_radio.isChecked():
+                    current_path = os.path.join(os.getcwd(), "dataset", "Sample", str(key) + "-" + name)
+                else:
+                    current_path = os.path.join(os.getcwd(), "dataset", "Original", str(key) + "-" + name)
+                    enhanced_path = os.path.join(os.getcwd(), "dataset", "Enhanced", str(key) + "-" + name)
+                    os.makedirs(enhanced_path, exist_ok=True)
+                
+                os.makedirs(current_path, exist_ok=True)
+                
+                ui.start_timer()
+                ui.generate_dataset_btn.setText("Generating")
+            else:
+                raise Exception("No algorithm selected")
         except:
             msg = QMessageBox(ui)
             msg.setWindowTitle("User Information")
-            msg.setText("Provide Information Please! \n\nName: (Any Combination of Letters and Numbers) \nKey: (Only numbers 0-9)")
+            msg.setText("Select an Algorithm and Provide Information! \n\nName: (Any Combination of Letters and Numbers) \nKey: (Only numbers 0-9)")
             msg.setIcon(QMessageBox.Warning)
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
@@ -69,17 +77,34 @@ def save_dataset(ui):
         if len(faces) != 1:
             ui.draw_text("No face found. Keep one person visible.", 10, 30, color=(0, 0, 255))
         else:
-            for (x, y, w, h) in faces:
-                distance = calculate_distance(w)
+            if ui.enhanced_eigen_algo_radio.isChecked():
+                for (x, y, w, h) in faces:
+                    distance = calculate_distance(w)
+                    if 30 <= distance <= 60:
+                        gray_image = ui.get_gray_image()[y:y + h, x:x + w]
+                        resized_image = ui.resize_image(gray_image, 300, 300)
+                        enhanced_image = image_preprocess(resized_image)
 
-                if 30 <= distance <= 60:
+                        cv2.imwrite(original_location, resized_image)
+                        cv2.imwrite(enhanced_location, enhanced_image)
+
+                        file_name = os.path.basename(original_location)
+                        ui.draw_text(file_name, 20, 30)
+                        dataset_per_subject -= 1
+
+                        total_images = 20
+                        progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
+                        ui.progress_bar_generate.setValue(progress_value)
+                    else:
+                        # Draw the rectangle in red
+                        cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                        # Draw the text in red
+                        ui.draw_text("Please Move Closer or Farther.", 10, 30, color=(0, 0, 255))
+            else:
+                for (x, y, w, h) in faces:
                     gray_image = ui.get_gray_image()[y:y + h, x:x + w]
                     resized_image = ui.resize_image(gray_image, 300, 300)
-                    enhanced_image = image_preprocess(resized_image)
-
                     cv2.imwrite(original_location, resized_image)
-                    cv2.imwrite(enhanced_location, enhanced_image)
-
                     file_name = os.path.basename(original_location)
                     ui.draw_text(file_name, 20, 30)
                     dataset_per_subject -= 1
@@ -87,7 +112,5 @@ def save_dataset(ui):
                     total_images = 20
                     progress_value = int(((total_images - dataset_per_subject) / total_images) * 100)
                     ui.progress_bar_generate.setValue(progress_value)
-                else:
-                    ui.draw_text("Please Move Closer or Farther.", 10, 30)
-
+    
     ui.display()

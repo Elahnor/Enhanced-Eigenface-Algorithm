@@ -25,7 +25,7 @@ def draw_rectangle(self, image, faces, enhanced_eigen_algo_radio, eigen_algo_rad
         #Green Rectangle
         rectangle_color = (0, 255, 0)
 
-        if enhanced_eigen_algo_radio.isChecked():
+        if self.recognize_face_btn.isChecked() and enhanced_eigen_algo_radio.isChecked():
             if distance < 30 or distance > 60:
                 rectangle_color = (0, 0, 255)  #Red Rectangle
                 distance_text = "Face is Out of Range"
