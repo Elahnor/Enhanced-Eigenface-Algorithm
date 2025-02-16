@@ -101,9 +101,9 @@ def save_dataset(ui):
             ui.draw_text("Please Stop Moving!", 10, 30, color=(0, 0, 255))
             ui.draw_text("Generating Dataset in Progress.", 10, 60, color=(0, 0, 255))
             for (x, y, w, h) in faces:
-                cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)  
+                cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)
         else:
-            ui.draw_rectangle(faces)  
+            ui.draw_rectangle(faces)
 
             if len(faces) != 1:
                 ui.draw_text("No face found. Keep one person visible.", 10, 30, color=(0, 0, 255))
@@ -117,13 +117,13 @@ def save_dataset(ui):
                             ui.draw_text("Please Move Closer or Farther.", 10, 30, color=(0, 0, 255))
 
                 if len(faces) == 1 and (distance is None or (30 <= distance <= 60)):
-                    ui.draw_text("Please Stay Still!", 10, 30, color=(0, 255, 0)) 
+                    ui.draw_text("Please Stay Still!", 10, 30, color=(0, 255, 0))
 
                     if ui.enhanced_eigen_algo_radio.isChecked():
                         for (x, y, w, h) in faces:
                             if 30 <= distance <= 60:
                                 gray_image = ui.get_gray_image()[y:y + h, x:x + w]
-                                resized_image = ui.resize_image(gray_image, 300, 300)
+                                resized_image = ui.resize_image(gray_image, 300, 300)  # 300x300 for enhanced
                                 enhanced_image = image_preprocess(resized_image)
 
                                 cv2.imwrite(original_location, resized_image)
@@ -139,7 +139,7 @@ def save_dataset(ui):
                     else:
                         for (x, y, w, h) in faces:
                             gray_image = ui.get_gray_image()[y:y + h, x:x + w]
-                            resized_image = ui.resize_image(gray_image, 300, 300)
+                            resized_image = ui.resize_image(gray_image, 100, 100)  # 100x100 for eigenface
                             cv2.imwrite(original_location, resized_image)
                             file_name = f"Saving {os.path.basename(original_location)}"
                             ui.draw_text(file_name, 10, 60)

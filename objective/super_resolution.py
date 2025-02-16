@@ -23,5 +23,4 @@ def image_preprocess(image):
     image = adjust_contrast_clahe(image)
     image = sharpen_image(image)
     image = cubic_interpolation(image)
-
     return image
