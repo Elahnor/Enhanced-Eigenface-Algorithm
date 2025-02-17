@@ -114,10 +114,11 @@ def save_dataset(ui):
             for (x, y, w, h) in faces:
                 cv2.rectangle(ui.image, (x, y), (x + w, y + h), (0, 0, 255), 2)
         else:
-            ui.draw_rectangle(faces)
+            if len(faces) == 1:
+                ui.draw_rectangle(faces)
 
             if len(faces) != 1:
-                ui.draw_text("No face found. Keep one person visible.", 10, 30, color=(0, 0, 255))
+                ui.draw_text("Please keep only one person visible.", 10, 30, color=(0, 0, 255))
             else:
                 distance = None
                 if ui.enhanced_eigen_algo_radio.isChecked():
