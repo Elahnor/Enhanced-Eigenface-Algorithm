@@ -16,7 +16,7 @@ def train_dataset(self):
         self.train_dataset_btn.setText("Stop Training")
         os.makedirs("training", exist_ok=True)
 
-        original_dataset_path = "dataset/Original"
+        original_dataset_path = "dataset/Sample"
         enhanced_dataset_path = "dataset/Enhanced"
 
         if self.eigen_algo_radio.isChecked() and not os.path.exists(original_dataset_path):
@@ -43,7 +43,7 @@ def train_dataset(self):
             self.train_dataset_btn.setText("Train Dataset")
             return
 
-        dataset_folder = "Enhanced" if self.enhanced_eigen_algo_radio.isChecked() else "Original"
+        dataset_folder = "Enhanced" if self.enhanced_eigen_algo_radio.isChecked() else "Sample"
         labels, faces = get_labels_and_faces(dataset_folder)
 
         try:

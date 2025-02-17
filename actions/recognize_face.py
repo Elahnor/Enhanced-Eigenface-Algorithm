@@ -21,7 +21,7 @@ def recognize(self):
         enhanced_model_path = "training/enhanced_eigen_trained_dataset.yml"
         lbph_model_path = "training/lbph_trained_dataset.yml"
         
-        original_dataset_path = "dataset/Original"
+        original_dataset_path = "dataset/Sample"
         enhanced_dataset_path = "dataset/Enhanced"
         
         if self.eigen_algo_radio.isChecked():
