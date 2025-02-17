@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
 from utility.calculation import calculate_distance
 from utility.movement import detect_movement
-from objective.super_resolution import image_preprocess, is_real_face
+from objective.super_resolution import image_preprocess, is_real_face  # Import the new validation function
 
 previous_frame = None
 dataset_per_subject = 20
@@ -81,24 +81,23 @@ def save_dataset(ui):
                                 resized_image = ui.resize_image(gray_image, 300, 300)
                                 enhanced_image = image_preprocess(resized_image)
 
-                                if not is_real_face(resized_image):
+                                # Face validation check
+                                if not is_real_face(ui.image[y:y + h, x:x + w]):
                                     msg = QMessageBox()
                                     msg.setIcon(QMessageBox.Warning)
-                                    msg.setText("Invalid Facial Recognition. Identified Possible Spoofing Attack!")
-                                    msg.setWindowTitle("Facial Recognition Failed")
+                                    msg.setText("Invalid Face Images. Please Try Again!")
+                                    msg.setWindowTitle("Face Validation Failed")
                                     msg.setWindowIcon(QIcon("icon/AppIcon.png"))
                                     msg.setStandardButtons(QMessageBox.Ok)
                                     msg.exec_()
-
-                                    ui.generate_dataset_btn.setText("Generate Dataset")
+                                    # Stop the dataset generation process
                                     ui.generate_dataset_btn.setChecked(False)
+                                    ui.generate_dataset_btn.setText("Generate Dataset")
                                     ui.stop_timer()
-
                                     ui.image = cv2.imread("icon/TitleScreen.png", 1)
                                     ui.modified_image = ui.image.copy()
                                     ui.display()
-
-                                    return 
+                                    return
 
                                 cv2.imwrite(original_location, resized_image)
                                 cv2.imwrite(enhanced_location, enhanced_image)

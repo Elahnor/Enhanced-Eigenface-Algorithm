@@ -18,6 +18,16 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
         expected_size = (300, 300) 
     scaled_roi_gray = cv2.resize(scaled_roi_gray, expected_size)
 
+    # Check if the Enhanced Eigenface Algorithm is selected
+    if self.enhanced_eigen_algo_radio.isChecked():
+        # Get the number of faces detected
+        faces = self.get_faces()
+
+        # If more than one face is detected, display a message and return
+        if len(faces) != 1:
+            self.draw_text("Please ensure only one person is visible.", 10, 30, color=(0, 0, 255))
+            return recognition_times
+
     if self.recognize_face_btn.isChecked() and (self.eigen_algo_radio.isChecked() or self.enhanced_eigen_algo_radio.isChecked()):
         try:
             # Check if the dataset is trained

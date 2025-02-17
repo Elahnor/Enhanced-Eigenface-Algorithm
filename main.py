@@ -1,4 +1,3 @@
-# main.py
 import cv2
 import sys
 from datetime import datetime
@@ -9,7 +8,7 @@ from utility.menu_info import MenuInfo
 from actions.generate_dataset import generate
 from actions.train_dataset import train_dataset
 from actions.recognize_face import read_dataset, recognize
-from utility.saved_dataset import save_dataset  # Importing save_dataset from saved_dataset.py
+from utility.saved_dataset import save_dataset
 from utility.get_info import get_labels_and_faces, get_gray_image, get_faces
 from utility.select_algo import algorithm_radio_changed, update_recognizer, assign_algorithms
 from utility.about_image import display, update_image, pix_image, resize_image
