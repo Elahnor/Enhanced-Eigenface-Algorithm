@@ -84,8 +84,8 @@ def save_dataset(ui):
                                 if not is_real_face(resized_image):
                                     msg = QMessageBox()
                                     msg.setIcon(QMessageBox.Warning)
-                                    msg.setText("Invalid Face Images. Please Try Again!")
-                                    msg.setWindowTitle("Face Validation Failed")
+                                    msg.setText("Invalid Facial Recognition. Identified Possible Spoofing Attack!")
+                                    msg.setWindowTitle("Facial Recognition Failed")
                                     msg.setWindowIcon(QIcon("icon/AppIcon.png"))
                                     msg.setStandardButtons(QMessageBox.Ok)
                                     msg.exec_()
