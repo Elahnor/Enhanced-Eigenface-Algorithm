@@ -1,5 +1,3 @@
-# generate_dataset.py
-
 import os
 import cv2
 from PyQt5.QtWidgets import QMessageBox
@@ -55,7 +53,7 @@ def generate(ui):
                 os.makedirs(current_path, exist_ok=True)
 
                 ui.start_timer()
-                ui.generate_dataset_btn.setText("Generating")
+                ui.generate_dataset_btn.setText("Stop Generating")
             else:
                 raise Exception("No algorithm selected")
         except:
@@ -75,6 +73,17 @@ def save_dataset(ui):
     original_location = os.path.join(current_path, str(dataset_per_subject) + ".png")
     enhanced_location = os.path.join(os.getcwd(), "dataset", "Enhanced", os.path.basename(current_path), str(dataset_per_subject) + ".png")
 
+    if ui.generate_dataset_btn.isChecked() == False and dataset_per_subject < 20:
+        ui.generate_dataset_btn.setText("Generate Dataset")
+        ui.generate_dataset_btn.setChecked(False)
+        ui.stop_timer()
+        dataset_per_subject = 20
+
+        ui.image = cv2.imread("icon/TitleScreen.png", 1)
+        ui.modified_image = ui.image.copy()
+        ui.display()
+        return  
+    
     if dataset_per_subject < 1:
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
@@ -99,7 +108,7 @@ def save_dataset(ui):
         ui.image = cv2.flip(ui.image, 1)
         faces = ui.get_faces()
 
-        if previous_frame is not None and detect_movement(ui.image, previous_frame):
+        if ui.enhanced_eigen_algo_radio.isChecked() and previous_frame is not None and detect_movement(ui.image, previous_frame):
             ui.draw_text("Please Stop Moving!", 10, 30, color=(0, 0, 255))
             ui.draw_text("Generating Dataset in Progress.", 10, 60, color=(0, 0, 255))
             for (x, y, w, h) in faces:
@@ -125,12 +134,10 @@ def save_dataset(ui):
                         for (x, y, w, h) in faces:
                             if 30 <= distance <= 60:
                                 gray_image = ui.get_gray_image()[y:y + h, x:x + w]
-                                resized_image = ui.resize_image(gray_image, 300, 300)  # 300x300 for enhanced
+                                resized_image = ui.resize_image(gray_image, 300, 300)
                                 enhanced_image = image_preprocess(resized_image)
 
-                                # Check if it's a real face using the is_real_face function
                                 if not is_real_face(resized_image):
-                                    # Show a message box when a fake image is detected
                                     msg = QMessageBox()
                                     msg.setIcon(QMessageBox.Warning)
                                     msg.setText("Invalid Face Images. Please Try Again!")
@@ -143,14 +150,12 @@ def save_dataset(ui):
                                     ui.generate_dataset_btn.setChecked(False)
                                     ui.stop_timer()
 
-                                    # Reset to Title screen after stopping the process
                                     ui.image = cv2.imread("icon/TitleScreen.png", 1)
                                     ui.modified_image = ui.image.copy()
                                     ui.display()
 
-                                    return  # Stop the dataset generation process
+                                    return 
 
-                                # Save the images if the face is valid
                                 cv2.imwrite(original_location, resized_image)
                                 cv2.imwrite(enhanced_location, enhanced_image)
 
@@ -164,7 +169,7 @@ def save_dataset(ui):
                     else:
                         for (x, y, w, h) in faces:
                             gray_image = ui.get_gray_image()[y:y + h, x:x + w]
-                            resized_image = ui.resize_image(gray_image, 100, 100)  # 100x100 for eigenface
+                            resized_image = ui.resize_image(gray_image, 300, 300) 
                             cv2.imwrite(original_location, resized_image)
                             file_name = f"Saving {os.path.basename(original_location)}"
                             ui.draw_text(file_name, 10, 60)

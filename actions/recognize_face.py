@@ -13,8 +13,7 @@ def read_dataset(self):
             else:
                 self.face_recognizer.read("training/eigen_trained_dataset.yml")
         except Exception as e:
-            self.print_custom_error("Facial Recognition Failed: Dataset Not Trained")
-            print(e)
+                pass
 
 def recognize(self):       
     if self.recognize_face_btn.isChecked():
