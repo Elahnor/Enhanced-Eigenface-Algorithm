@@ -1,5 +1,3 @@
-# super_resolution.py
-
 import cv2
 import numpy as np
 
@@ -20,23 +18,16 @@ def cubic_interpolation(image, scale_factor=2):
     return cv2.resize(image, new_dim, interpolation=cv2.INTER_CUBIC)
 
 def is_real_face(face_image):
-    """
-    A basic check if the detected face is a real face or not.
-    In this example, we'll use simple criteria based on image sharpness.
-    """
-    # Check if the image is already in grayscale
     if len(face_image.shape) == 3:
         gray_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
     else:
-        gray_face = face_image  # It's already grayscale
+        gray_face = face_image
 
-    # Calculate the sharpness of the image (using Laplacian variance)
-    sharpness = cv2.Laplacian(gray_face, cv2.CV_64F).var()  # A measure of sharpness
+    sharpness = cv2.Laplacian(gray_face, cv2.CV_64F).var()
 
-    # A sharpness threshold that can help detect if the face is printed/phone image
-    if sharpness < 100:  # Arbitrary threshold, can be adjusted
-        return False  # It is not a real face (likely a printed image or screen)
-    return True  # It's a real face
+    if sharpness < 70: 
+        return False  
+    return True  
 
 def image_preprocess(image):
     if len(image.shape) == 3:

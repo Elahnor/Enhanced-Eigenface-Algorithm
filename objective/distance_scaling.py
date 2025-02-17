@@ -3,6 +3,7 @@ import cv2
 import time
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox
+from objective.super_resolution import is_real_face
 from utility.calculation import calculate_confidence_level, get_scaling_factor_for_distance
 from utility.get_info import get_all_key_name_pairs
 
@@ -53,6 +54,26 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
                     self.recognize_face_btn.setChecked(False)
                     self.recognize_face_btn.setText("Recognize Face")
                     # Stop the camera and display the TitleScreen image
+                    self.stop_timer()
+                    self.image = cv2.imread("icon/TitleScreen.png", 1)
+                    self.modified_image = self.image.copy()
+                    self.display()
+                    return recognition_times
+
+            # Check if the face is real using the enhanced Eigenface algorithm
+            if self.enhanced_eigen_algo_radio.isChecked():
+                if not is_real_face(roi_color):
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setText("Invalid Face Images. Please Try Again!")
+                    msg.setWindowTitle("Face Validation Failed")
+                    msg.setWindowIcon(QIcon("icon/AppIcon.png"))
+                    msg.setStandardButtons(QMessageBox.Ok)
+                    msg.exec_()
+                    # Stop the recognition process entirely
+                    self.recognize_face_btn.setChecked(False)
+                    self.recognize_face_btn.setText("Recognize Face")
+                    # Reset camera and image
                     self.stop_timer()
                     self.image = cv2.imread("icon/TitleScreen.png", 1)
                     self.modified_image = self.image.copy()
