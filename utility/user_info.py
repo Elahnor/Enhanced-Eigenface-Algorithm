@@ -17,7 +17,6 @@ class USER(QDialog):
         """Validates if the user information already exists in the dataset paths."""
         name, key = self.get_name_key()
 
-        # If dataset directory is empty, allow user creation
         if not any(os.listdir(dataset_path) for dataset_path in dataset_paths):
             return True
 
@@ -31,7 +30,6 @@ class USER(QDialog):
                 existing_name = folder.split("-")[1]
                 existing_key = folder.split("-")[0]
 
-                # Compare names case-insensitively
                 if existing_name.lower() == name.lower():
                     self.show_warning("Name already exists. Please enter a different Name.")
                     return False
