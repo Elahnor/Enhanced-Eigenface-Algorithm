@@ -9,18 +9,15 @@ class MenuInfo:
             This system enhances the Eigenface Algorithm to improve the identification of
             spoofing attacks in facial recognition. By addressing key challenges such as 
             the identification of face occlusions and spoofed images, the system
-            significantly increases accuracy and reliability. It employs super 
-            resolution to effectively manage noise in the covariance matrix, ensuring 
+            significantly increases accuracy and reliability. 
+            
+            <br><br>
+            It employs super resolution to effectively manage noise in the covariance matrix, ensuring 
             robust performance even with low-resolution images. Additionally, the system
             incorporates distance-adjustment features to account for varying facial
             distances from the camera, reducing the risk of misidentification and
             improving usability. Ultimately, this innovative approach strengthens the
             security and effectiveness of facial recognition technology.
-            
-            <br><br>
-            <b style="color: #022052;">Pamantasan ng Lungsod ng Maynila, CISTM - BSCS (2024)</b><br>
-            <b style="color: #022052;">Members</b>: Hale I. Casison, Chloe Gwyneth S. Upaga<br>
-            <b style="color: #022052;">Adviser</b>: Jamillah S. Guialil
         </body></html>''')
         msg_box.setWindowTitle("About")
         msg_box.setWindowIcon(QIcon("icon/AppIcon.png"))

@@ -85,8 +85,8 @@ def save_dataset(ui):
                                 if not is_real_face(ui.image[y:y + h, x:x + w]):
                                     msg = QMessageBox()
                                     msg.setIcon(QMessageBox.Warning)
-                                    msg.setText("<font color='red'>Invalid Facial Recognition.<br>Potential Spoofing Attack is <b>IDENTIFIED.</font></b>")
-                                    msg.setWindowTitle("Facial Recognition Failed")
+                                    msg.setText("Please Try Again. Potential Spoofing Attack is <b>IDENTIFIED</b!")
+                                    msg.setWindowTitle("Invalid Generation of Dataset.")
                                     msg.setWindowIcon(QIcon("icon/AppIcon.png"))
                                     msg.setStandardButtons(QMessageBox.Ok)
                                     msg.exec_()

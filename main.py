@@ -140,7 +140,7 @@ class EFR(QMainWindow):
         draw_text(self.image, text, x, y, font_size, color)
         
     def draw_rectangle(self, faces):
-        draw_rectangle(self, self.image, faces, self.enhanced_eigen_algo_radio, self.eigen_algo_radio, self.recog_time_checkbox)
+        draw_rectangle(self, self.image, faces, self.enhanced_eigen_algo_radio, self.eigen_algo_radio)
             
 if __name__ == "__main__":
     app = QApplication(sys.argv)

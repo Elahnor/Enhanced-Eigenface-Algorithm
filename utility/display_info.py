@@ -6,7 +6,7 @@ from utility.calculation import calculate_distance
 def draw_text(image, text, x=20, y=20, font_size=2, color=(0, 255, 0)):
     cv2.putText(image, text, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.6, color, font_size)
 
-def draw_rectangle(self, image, faces, enhanced_eigen_algo_radio, eigen_algo_radio, recog_time_checkbox):
+def draw_rectangle(self, image, faces, enhanced_eigen_algo_radio, eigen_algo_radio):
     recognition_start_time = time.time()
 
     recognition_times = []
@@ -16,13 +16,11 @@ def draw_rectangle(self, image, faces, enhanced_eigen_algo_radio, eigen_algo_rad
         roi_gray_original = self.get_gray_image()[y:y + h, x:x + w]
         roi_color = image[y:y + h, x:x + w]
 
-        # Ensure that distance is calculated before use
         distance = calculate_distance(w)
 
         if distance is None:
             continue
         
-        #Green Rectangle
         rectangle_color = (0, 255, 0)
 
         if self.recognize_face_btn.isChecked() and enhanced_eigen_algo_radio.isChecked():
@@ -46,12 +44,3 @@ def draw_rectangle(self, image, faces, enhanced_eigen_algo_radio, eigen_algo_rad
         x = (image.shape[1] - text_width) // 2
         y = 80
         cv2.putText(image, text, (x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(0, 0, 255), thickness=2)
-
-    # Recognition Time
-    if (eigen_algo_radio.isChecked() or enhanced_eigen_algo_radio.isChecked()) and recog_time_checkbox.isChecked():
-        if eigen_algo_radio.isChecked():
-            total_recognition_time = round(time.time() - recognition_start_time, 4)
-            cv2.putText(image, f"Recognition Time: {total_recognition_time}s", (10, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 255, 0), thickness=2)
-        elif (30 <= distance <= 60):
-            total_recognition_time = round(time.time() - recognition_start_time, 4)
-            cv2.putText(image, f"Recognition Time: {total_recognition_time}s", (10, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 255, 0), thickness=2)

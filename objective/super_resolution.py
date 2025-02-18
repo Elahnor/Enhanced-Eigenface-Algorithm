@@ -20,7 +20,7 @@ def cubic_interpolation(image, scale_factor=2):
 import cv2
 import numpy as np
 
-def is_real_face(face_image, min_face_size=(50, 50), max_face_size=(300, 300), min_brightness=20, max_brightness=500):
+def is_real_face(face_image, min_face_size=(50, 50), max_face_size=(300, 300), min_brightness=20, max_brightness=200):
     if len(face_image.shape) == 3:
         gray_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
     else:
