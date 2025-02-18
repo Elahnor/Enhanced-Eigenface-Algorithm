@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
 from utility.calculation import calculate_distance
 from utility.movement import detect_movement
-from objective.super_resolution import image_preprocess, is_real_face
+from objective.lbp_histogram import is_real_face
+from objective.super_resolution import image_preprocess
 
 previous_frame = None
 dataset_per_subject = 20
@@ -81,7 +82,6 @@ def save_dataset(ui):
                                 resized_image = ui.resize_image(gray_image, 300, 300)
                                 enhanced_image = image_preprocess(resized_image)
 
-                                # Face validation check
                                 if not is_real_face(ui.image[y:y + h, x:x + w]):
                                     msg = QMessageBox()
                                     msg.setIcon(QMessageBox.Warning)
@@ -90,7 +90,7 @@ def save_dataset(ui):
                                     msg.setWindowIcon(QIcon("icon/AppIcon.png"))
                                     msg.setStandardButtons(QMessageBox.Ok)
                                     msg.exec_()
-                                    # Stop the dataset generation process
+
                                     ui.generate_dataset_btn.setChecked(False)
                                     ui.generate_dataset_btn.setText("Generate Dataset")
                                     ui.stop_timer()

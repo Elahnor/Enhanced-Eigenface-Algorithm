@@ -2,7 +2,7 @@ import cv2
 import time
 from PyQt5.QtGui import QIcon, QPixmap, QImage
 from PyQt5.QtWidgets import QMessageBox, QLabel
-from objective.super_resolution import is_real_face
+from objective.lbp_histogram import is_real_face
 from utility.calculation import calculate_confidence_level, get_scaling_factor_for_distance
 from utility.get_info import get_all_key_name_pairs
 

@@ -25,14 +25,13 @@ def draw_rectangle(self, image, faces, enhanced_eigen_algo_radio, eigen_algo_rad
 
         if self.recognize_face_btn.isChecked() and enhanced_eigen_algo_radio.isChecked():
             if distance < 30 or distance > 60:
-                rectangle_color = (0, 0, 255)  #Red Rectangle
+                rectangle_color = (0, 0, 255)
                 distance_text = "Face is Out of Range"
                 draw_text(image, distance_text, x - 65, y + h + 35, color=(0, 0, 255))
                 cv2.rectangle(image, (x, y), (x + w, y + h), rectangle_color, 2)
                 display_warning = True
                 continue  
 
-        # Apply distance-based scaling and recognition
         recognition_times = distance_scaling(
             self, roi_gray_original, roi_color, distance, x, y, w, h, recognition_start_time, recognition_times
         )

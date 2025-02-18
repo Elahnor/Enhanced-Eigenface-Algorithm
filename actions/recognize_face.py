@@ -2,6 +2,7 @@ import os
 import cv2
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox
+from objective.lbp_histogram import read_lbph_model  
 
 def read_dataset(self):
     if self.recognize_face_btn.isChecked():
@@ -9,7 +10,7 @@ def read_dataset(self):
             if self.enhanced_eigen_algo_radio.isChecked():
                 # Load both recognizers for enhanced algorithm
                 self.face_recognizer.read("training/enhanced_eigen_trained_dataset.yml")
-                self.lbph_recognizer.read("training/lbph_trained_dataset.yml")
+                self.lbph_recognizer = read_lbph_model("training/lbph_trained_dataset.yml")
             else:
                 self.face_recognizer.read("training/eigen_trained_dataset.yml")
         except Exception as e:

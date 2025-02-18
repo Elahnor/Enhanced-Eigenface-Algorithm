@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QTimer
 
 from utility.get_info import get_labels_and_faces
+from objective.lbp_histogram import train_lbph, save_lbph_model  # Import the LBPH functions
 
 def train_dataset(self):
     """Handles the training of the dataset."""
@@ -61,7 +62,7 @@ def train_dataset(self):
 
             if self.enhanced_eigen_algo_radio.isChecked():
                 self.face_recognizer = cv2.face.EigenFaceRecognizer_create()
-                self.lbph_recognizer = cv2.face.LBPHFaceRecognizer_create()
+                self.lbph_recognizer = train_lbph(faces, labels)  # Use the new function to train LBPH
 
                 for i in range(1, 51):
                     self.face_recognizer.train(faces, np.array(labels))
@@ -92,20 +93,12 @@ def train_dataset(self):
         self.train_dataset_btn.setChecked(False)
         self.train_dataset_btn.setText("Train Dataset")
 
-def update_progress(self):
-    """Gradually updates progress bar to ensure a smooth transition."""
-    current_value = self.progress_bar_train.value()
-    if current_value < 100:
-        self.progress_bar_train.setValue(current_value + 1)
-    else:
-        self.progress_timer.stop()
-
 def save_trained_dataset(self):
     """Saves the trained dataset."""
     try:
         if self.enhanced_eigen_algo_radio.isChecked():
             self.face_recognizer.save("training/enhanced_eigen_trained_dataset.yml")
-            self.lbph_recognizer.save("training/lbph_trained_dataset.yml")
+            save_lbph_model(self.lbph_recognizer, "training/lbph_trained_dataset.yml")  # Save the LBPH model
         else:
             self.face_recognizer.save("training/eigen_trained_dataset.yml")
         
@@ -119,3 +112,11 @@ def save_trained_dataset(self):
     except Exception as e:
         self.print_custom_error("Unable to Save Trained Dataset")
         print(f"Error during saving: {e}")
+
+def update_progress(self):
+    """Gradually updates progress bar to ensure a smooth transition."""
+    current_value = self.progress_bar_train.value()
+    if current_value < 100:
+        self.progress_bar_train.setValue(current_value + 1)
+    else:
+        self.progress_timer.stop()
