@@ -1,14 +1,19 @@
 import os
 import cv2
 import time
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtGui import QIcon, QPixmap, QImage
+from PyQt5.QtWidgets import QMessageBox, QLabel
 from objective.super_resolution import is_real_face
 from utility.calculation import calculate_confidence_level, get_scaling_factor_for_distance
 from utility.get_info import get_all_key_name_pairs
 
+def resize_image_for_display(image, width=200):
+    aspect_ratio = image.shape[1] / image.shape[0]
+    height = int(width / aspect_ratio)
+    resized_image = cv2.resize(image, (width, height))
+    return resized_image
+
 def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, recognition_start_time, recognition_times):
-    # Apply distance-based scaling for face image
     scaling_factor = get_scaling_factor_for_distance(distance)
     scaled_roi_gray = self.resize_image(roi_gray_original, int(600 * scaling_factor), int(600 * scaling_factor))
 
@@ -18,72 +23,41 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
         expected_size = (300, 300) 
     scaled_roi_gray = cv2.resize(scaled_roi_gray, expected_size)
 
-    # Check if the Enhanced Eigenface Algorithm is selected
     if self.enhanced_eigen_algo_radio.isChecked():
-        # Get the number of faces detected
         faces = self.get_faces()
 
-        # If more than one face is detected, display a message and return
         if len(faces) != 1:
             self.draw_text("Please ensure only one person is visible.", 10, 30, color=(0, 0, 255))
             return recognition_times
 
     if self.recognize_face_btn.isChecked() and (self.eigen_algo_radio.isChecked() or self.enhanced_eigen_algo_radio.isChecked()):
         try:
-            # Check if the dataset is trained
-            trained_model_path = "training/eigen_trained_dataset.yml"
-            enhanced_model_path = "training/enhanced_eigen_trained_dataset.yml"
-            lbph_model_path = "training/lbph_trained_dataset.yml"
-
-            if self.enhanced_eigen_algo_radio.isChecked():
-                if not (os.path.exists(enhanced_model_path) and os.path.exists(lbph_model_path)):
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Warning)
-                    msg.setWindowTitle("Training Required")
-                    msg.setText("Please train the dataset first before recognizing faces.")
-                    msg.setStandardButtons(QMessageBox.Ok)
-                    msg.setWindowIcon(QIcon("icon/AppIcon.png"))
-                    msg.exec_()
-                    self.recognize_face_btn.setChecked(False)
-                    self.recognize_face_btn.setText("Recognize Face")
-                    # Stop the camera and display the TitleScreen image
-                    self.stop_timer()
-                    self.image = cv2.imread("icon/TitleScreen.png", 1)
-                    self.modified_image = self.image.copy()
-                    self.display()
-                    return recognition_times
-            else:
-                if not os.path.exists(trained_model_path):
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Warning)
-                    msg.setWindowTitle("Training Required")
-                    msg.setText("Please train the dataset first before recognizing faces.")
-                    msg.setStandardButtons(QMessageBox.Ok)
-                    msg.setWindowIcon(QIcon("icon/AppIcon.png"))
-                    msg.exec_()
-                    self.recognize_face_btn.setChecked(False)
-                    self.recognize_face_btn.setText("Recognize Face")
-                    # Stop the camera and display the TitleScreen image
-                    self.stop_timer()
-                    self.image = cv2.imread("icon/TitleScreen.png", 1)
-                    self.modified_image = self.image.copy()
-                    self.display()
-                    return recognition_times
-
-            # Check if the face is real using the enhanced Eigenface algorithm
             if self.enhanced_eigen_algo_radio.isChecked():
                 if not is_real_face(roi_color):
                     msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Warning)
-                    msg.setText("Invalid Face Images. Please Try Again!")
-                    msg.setWindowTitle("Face Validation Failed")
+                    msg.setIcon(QMessageBox.Warning) 
+                    msg.setText("<b><font color='red'>Invalid Facial Recognition. Potential Spoofing Attack is IDENTIFIED.</font></b>")
+                    msg.setWindowTitle("Facial Recognition Failed")
                     msg.setWindowIcon(QIcon("icon/AppIcon.png"))
-                    msg.setStandardButtons(QMessageBox.Ok)
+                    msg.setStandardButtons(QMessageBox.Ok)  
+
+                    full_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB) 
+                    resized_image = resize_image_for_display(full_image, width=200)
+
+                    height, width, channel = resized_image.shape
+                    bytes_per_line = 3 * width
+                    qimage = QPixmap.fromImage(QImage(resized_image.data, width, height, bytes_per_line, QImage.Format_RGB888))
+                    
+                    face_label = QLabel()
+                    face_label.setPixmap(qimage)
+                    msg.setInformativeText("<font color='red'>Note: This image illustrates the cause of the facial recognition failure which is due to a potential spoofing attack using a fake or altered face.</font>")
+                    msg.setIconPixmap(qimage)
+                    
                     msg.exec_()
-                    # Stop the recognition process entirely
+
                     self.recognize_face_btn.setChecked(False)
                     self.recognize_face_btn.setText("Recognize Face")
-                    # Reset camera and image
+
                     self.stop_timer()
                     self.image = cv2.imread("icon/TitleScreen.png", 1)
                     self.modified_image = self.image.copy()
@@ -95,6 +69,45 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
             name = get_all_key_name_pairs().get(str(predicted))
 
             self.draw_text(name, x - 5, y - 5)
+            cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            if not self.enhanced_eigen_algo_radio.isChecked() or (30 <= distance <= 60):
+                distance_text = f"{distance} cm"
+                self.draw_text(distance_text, x + 50, y + h + 25, color=(0, 255, 0))
+
+            self.display()
+            time.sleep(0.5)
+
+            if name:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setWindowTitle("Successful Facial Recognition")
+                msg.setText(f"\nHello {name}!\n\n\nNote: If you wish to recognize another face, click 'Recognize Face' again to start a new session")
+                msg.setStyleSheet("color: #022052;")
+
+                face_label = QLabel()
+                recognized_face = cv2.cvtColor(roi_color, cv2.COLOR_BGR2RGB)
+                resized_face = resize_image_for_display(recognized_face, width=200)
+
+                height, width, channel = resized_face.shape
+                bytes_per_line = 3 * width
+                qimage = QPixmap.fromImage(QImage(resized_face.data, width, height, bytes_per_line, QImage.Format_RGB888))
+                face_label.setPixmap(qimage)
+                msg.setDetailedText(name)
+                msg.setStandardButtons(QMessageBox.Ok)
+                msg.setWindowIcon(QIcon("icon/AppIcon.png"))
+                msg.setIconPixmap(qimage)  
+                
+                response = msg.exec_()
+                
+                if response == QMessageBox.Ok:
+                    self.stop_timer()
+                    self.image = cv2.imread("icon/TitleScreen.png", 1)
+                    self.modified_image = self.image.copy()
+                    self.display()
+                    self.recognize_face_btn.setChecked(False)
+                    self.recognize_face_btn.setText("Recognize Face")
+                    return recognition_times
 
             prediction_end_time = time.time()
             recognition_time = round(prediction_end_time - prediction_start_time, 4)
@@ -121,13 +134,5 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
         except Exception as e:
             self.print_custom_error("Facial Recognition Failed: Dataset Not Trained")
             print(e)
-
-    # Draw rectangle around the face
-    cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-    # Display distance text
-    if not self.enhanced_eigen_algo_radio.isChecked() or (30 <= distance <= 60):
-        distance_text = f"{distance} cm"
-        self.draw_text(distance_text, x + 50, y + h + 25, color=(0, 255, 0))
 
     return recognition_times

@@ -17,7 +17,10 @@ def cubic_interpolation(image, scale_factor=2):
     new_dim = (width * scale_factor, height * scale_factor)
     return cv2.resize(image, new_dim, interpolation=cv2.INTER_CUBIC)
 
-def is_real_face(face_image):
+import cv2
+import numpy as np
+
+def is_real_face(face_image, min_face_size=(50, 50), max_face_size=(300, 300), min_brightness=20, max_brightness=500):
     if len(face_image.shape) == 3:
         gray_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
     else:
@@ -25,9 +28,21 @@ def is_real_face(face_image):
 
     sharpness = cv2.Laplacian(gray_face, cv2.CV_64F).var()
 
-    if sharpness < 70: 
+    if sharpness < 70:
         return False  
-    return True  
+
+    height, width = gray_face.shape
+    if width < min_face_size[0] or height < min_face_size[1]:
+        return False  
+    if width > max_face_size[0] or height > max_face_size[1]:
+        return False  
+    
+    avg_brightness = np.mean(gray_face)
+    
+    if avg_brightness < min_brightness or avg_brightness > max_brightness:
+        return False 
+
+    return True
 
 def image_preprocess(image):
     if len(image.shape) == 3:

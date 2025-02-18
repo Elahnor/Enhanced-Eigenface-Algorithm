@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
 from utility.calculation import calculate_distance
 from utility.movement import detect_movement
-from objective.super_resolution import image_preprocess, is_real_face  # Import the new validation function
+from objective.super_resolution import image_preprocess, is_real_face
 
 previous_frame = None
 dataset_per_subject = 20
@@ -85,8 +85,8 @@ def save_dataset(ui):
                                 if not is_real_face(ui.image[y:y + h, x:x + w]):
                                     msg = QMessageBox()
                                     msg.setIcon(QMessageBox.Warning)
-                                    msg.setText("Invalid Face Images. Please Try Again!")
-                                    msg.setWindowTitle("Face Validation Failed")
+                                    msg.setText("<font color='red'>Invalid Facial Recognition.<br>Potential Spoofing Attack is <b>IDENTIFIED.</font></b>")
+                                    msg.setWindowTitle("Facial Recognition Failed")
                                     msg.setWindowIcon(QIcon("icon/AppIcon.png"))
                                     msg.setStandardButtons(QMessageBox.Ok)
                                     msg.exec_()
