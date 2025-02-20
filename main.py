@@ -22,7 +22,7 @@ class EFR(QMainWindow):
         loadUi("mainwindow.ui", self)
         
         # Classifier for frontal face
-        self.face_classifier = cv2.CascadeClassifier("classifiers/frontalface_default.xml") 
+        self.face_classifier = cv2.CascadeClassifier("xml/frontalface_default.xml") 
         
         # Variables
         self.camera_id = 0

@@ -33,10 +33,27 @@ def is_real_face(face_image, min_face_size=(50, 50), max_face_size=(300, 300), m
         return False  
     if width > max_face_size[0] or height > max_face_size[1]:
         return False  
-    
+
     avg_brightness = np.mean(gray_face)
     
     if avg_brightness < min_brightness or avg_brightness > max_brightness:
         return False 
 
     return True
+
+def detect_occlusion(face_image, eye_cascade, nose_cascade, mouth_cascade):
+    """Detect occlusion by checking if both eyes, mouth, and nose are sufficiently visible."""
+    gray_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
+
+    eyes = eye_cascade.detectMultiScale(gray_face, 1.3, 5)
+    nose = nose_cascade.detectMultiScale(gray_face, 1.3, 5)
+    mouth = mouth_cascade.detectMultiScale(gray_face, 1.3, 5)
+
+    min_eyes = 1 
+    min_mouth = 1  
+    min_nose = 1   
+
+    if len(eyes) < min_eyes or len(mouth) < min_mouth or len(nose) < min_nose:
+        return True  
+    
+    return False  

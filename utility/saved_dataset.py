@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
 from utility.calculation import calculate_distance
 from utility.movement import detect_movement
-from objective.lbp_histogram import is_real_face
+from objective.lbp_histogram import is_real_face, detect_occlusion
 from objective.super_resolution import image_preprocess
 
 previous_frame = None
@@ -82,11 +82,34 @@ def save_dataset(ui):
                                 resized_image = ui.resize_image(gray_image, 300, 300)
                                 enhanced_image = image_preprocess(resized_image)
 
+                                # Check if the face is real
                                 if not is_real_face(ui.image[y:y + h, x:x + w]):
                                     msg = QMessageBox()
                                     msg.setIcon(QMessageBox.Warning)
-                                    msg.setText("Please Try Again. Potential Spoofing Attack is <b>IDENTIFIED</b!")
+                                    msg.setText("<font color='red'><b>Please Try Again. Potential Spoofing Attack is IDENTIFIED!</b></font>")
                                     msg.setWindowTitle("Invalid Generation of Dataset.")
+                                    msg.setWindowIcon(QIcon("icon/AppIcon.png"))
+                                    msg.setStandardButtons(QMessageBox.Ok)
+                                    msg.exec_()
+
+                                    ui.generate_dataset_btn.setChecked(False)
+                                    ui.generate_dataset_btn.setText("Generate Dataset")
+                                    ui.stop_timer()
+                                    ui.image = cv2.imread("icon/TitleScreen.png", 1)
+                                    ui.modified_image = ui.image.copy()
+                                    ui.display()
+                                    return
+
+                                # Check for occlusion (eyes, nose, and mouth visibility)
+                                eye_cascade = cv2.CascadeClassifier('xml/eye.xml')
+                                nose_cascade = cv2.CascadeClassifier('xml/nose.xml')
+                                mouth_cascade = cv2.CascadeClassifier('xml/mouth.xml')
+                                
+                                if detect_occlusion(ui.image[y:y + h, x:x + w], eye_cascade, nose_cascade, mouth_cascade):
+                                    msg = QMessageBox()
+                                    msg.setIcon(QMessageBox.Warning)
+                                    msg.setText("Make your whole face visible. Please Try Again!")
+                                    msg.setWindowTitle("Face Occlusion Detected.")
                                     msg.setWindowIcon(QIcon("icon/AppIcon.png"))
                                     msg.setStandardButtons(QMessageBox.Ok)
                                     msg.exec_()

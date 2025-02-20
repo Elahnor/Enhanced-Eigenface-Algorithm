@@ -24,6 +24,10 @@ class USER(QDialog):
             existing_folders = [folder for folder in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, folder))]
             for folder in existing_folders:
                 if folder.startswith(f"{key}-{name}"):
+                    folder_path = os.path.join(dataset_path, folder)
+                    existing_images = [f for f in os.listdir(folder_path) if f.endswith('.png')]
+                    if len(existing_images) < 19:
+                        return True
                     self.show_warning("Name and Key already exist. Please enter a different Name or Key.")
                     return False
 
