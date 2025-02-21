@@ -58,7 +58,7 @@ def generate(ui):
         except:
             msg = QMessageBox(ui)
             msg.setWindowTitle("User Information")
-            msg.setText("Select an Algorithm and Provide Information! \n\nName: (Any Combination of Letters and Numbers) \nKey: (Only numbers 0-9)")
+            msg.setText("Provide the Proper Information. Please Try Again! \n\nName: (Any Combination of Letters and Numbers) \nKey: (Only numbers 0-9)")
             msg.setIcon(QMessageBox.Warning)
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()

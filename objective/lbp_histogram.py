@@ -17,7 +17,7 @@ def read_lbph_model(model_path):
     lbph_recognizer.read(model_path)
     return lbph_recognizer
 
-def is_real_face(face_image, min_face_size=(50, 50), max_face_size=(300, 300), min_brightness=20, max_brightness=150):
+def is_real_face(face_image, min_face_size=(50, 50), max_face_size=(400, 400), min_brightness=20, max_brightness=150):
     if len(face_image.shape) == 3:
         gray_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
     else:
@@ -42,18 +42,19 @@ def is_real_face(face_image, min_face_size=(50, 50), max_face_size=(300, 300), m
     return True
 
 def detect_occlusion(face_image, eye_cascade, nose_cascade, mouth_cascade):
-    """Detect occlusion by checking if both eyes, mouth, and nose are sufficiently visible."""
+    """Detect occlusion by checking if both eyes, nose, and mouth are sufficiently visible, even with a tilted face."""
     gray_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
 
-    eyes = eye_cascade.detectMultiScale(gray_face, 1.3, 5)
-    nose = nose_cascade.detectMultiScale(gray_face, 1.3, 5)
-    mouth = mouth_cascade.detectMultiScale(gray_face, 1.3, 5)
+    eyes = eye_cascade.detectMultiScale(gray_face, scaleFactor=1.1, minNeighbors=4, minSize=(30, 30))
+    nose = nose_cascade.detectMultiScale(gray_face, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
+    mouth = mouth_cascade.detectMultiScale(gray_face, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
 
-    min_eyes = 1 
-    min_mouth = 1  
-    min_nose = 1   
+    min_eyes = 2  
+    min_mouth = 1 
+    min_nose = 1  
 
-    if len(eyes) < min_eyes or len(mouth) < min_mouth or len(nose) < min_nose:
-        return True  
-    
-    return False  
+    if len(eyes) < min_eyes or len(nose) < min_nose or len(mouth) < min_mouth:
+        return True 
+
+    return False 
+

@@ -17,6 +17,10 @@ class USER(QDialog):
         """Validates if the user information already exists in the dataset paths."""
         name, key = self.get_name_key()
 
+        if any(char.isdigit() for char in name):
+            self.show_warning("Name should not contain any numbers.\nPlease enter a valid Name.")
+            return False
+
         if not any(os.listdir(dataset_path) for dataset_path in dataset_paths):
             return True
 

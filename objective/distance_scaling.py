@@ -2,7 +2,8 @@ import cv2
 import time
 from PyQt5.QtGui import QIcon, QPixmap, QImage
 from PyQt5.QtWidgets import QMessageBox, QLabel
-from objective.lbp_histogram import is_real_face
+
+from objective.lbp_histogram import detect_occlusion, is_real_face
 from utility.calculation import calculate_confidence_level, get_scaling_factor_for_distance
 from utility.get_info import get_all_key_name_pairs
 
@@ -17,22 +18,20 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
     scaled_roi_gray = self.resize_image(roi_gray_original, int(600 * scaling_factor), int(600 * scaling_factor))
 
     expected_size = (600, 600)
-    
     if self.eigen_algo_radio.isChecked():
         expected_size = (300, 300)
     scaled_roi_gray = cv2.resize(scaled_roi_gray, expected_size)
 
-    if self.enhanced_eigen_algo_radio.isChecked():
+    if self.recognize_face_btn.isChecked() and self.enhanced_eigen_algo_radio.isChecked():
         faces = self.get_faces()
         if len(faces) != 1:
             self.draw_text("Please ensure only one person is visible.", 10, 30, color=(0, 0, 255))
             return recognition_times
 
-    if self.recognize_face_btn.isChecked() and self.enhanced_eigen_algo_radio.isChecked():
         if not is_real_face(roi_color):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning) 
-            msg.setText("<b><font color='red'>Invalid Facial Recognition. Potential Spoofing Attack is IDENTIFIED.</font></b>")
+            msg.setText("<font color='red'><b>Invalid Facial Recognition!</b><br><br>Potential Spoofing Attack is <b>IDENTIFIED!</b></font>")
             msg.setWindowTitle("Facial Recognition Failed")
             msg.setWindowIcon(QIcon("icon/AppIcon.png"))
             msg.setStandardButtons(QMessageBox.Ok)  
@@ -46,7 +45,7 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
             
             face_label = QLabel()
             face_label.setPixmap(qimage)
-            msg.setInformativeText("<font color='red'>Note: This image and the captured frame on the screen illustrate the cause of the facial recognition failure, which is due to a potential spoofing attack using a fake or altered face.</font>")
+            msg.setInformativeText("<font color='red'>Note: This image and the captured frame on the screen illustrate the cause of the facial recognition failure which is due to a potential spoofing attack using a fake or altered face.</font>")
             msg.setIconPixmap(qimage)
             
             msg.exec_()
@@ -59,14 +58,47 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
             self.modified_image = self.image.copy()
             self.display()
             return recognition_times
-                
-    cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        #Face Occlusion Detection
+        eye_cascade = cv2.CascadeClassifier('xml/eye.xml')
+        nose_cascade = cv2.CascadeClassifier('xml/nose.xml')
+        mouth_cascade = cv2.CascadeClassifier('xml/mouth.xml')
+
+        if detect_occlusion(roi_color, eye_cascade, nose_cascade, mouth_cascade):  
+            rect_color = (0, 0, 255)  
+            
+            if len(faces) == 1:
+                cv2.rectangle(self.image, (x, y), (x + w, y + h), rect_color, 2)
+            self.display()  
+
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("<b>Please Try Again!</b><br><br>Ensure your entire face is <b>visible</b> with your <b>eyes facing the camera</b> and your <b>face positioned straight.</b>")
+            msg.setWindowTitle("Face Occlusion Detected.")
+            msg.setWindowIcon(QIcon("icon/AppIcon.png"))
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
+
+            self.recognize_face_btn.setChecked(False)
+            self.recognize_face_btn.setText("Recognize Face")
+            self.stop_timer()
+
+            self.image = cv2.imread("icon/TitleScreen.png", 1)
+            self.modified_image = self.image.copy()
+
+            self.display()
+
+            return recognition_times
+    
+    if len(faces) == 1 and (30 <= distance <= 60):
+        rect_color = (0, 255, 0)
+        cv2.rectangle(self.image, (x, y), (x + w, y + h), rect_color, 2)
 
     if self.enhanced_eigen_algo_radio.isChecked():
         if distance < 30 or distance > 60:
             distance_color = (0, 0, 255)  
         else:
-            distance_color = (0, 255, 0)  
+            distance_color = (0, 255, 0)
     else:
         distance_color = (0, 255, 0)  
 
@@ -114,7 +146,9 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
                 msg.setWindowTitle("Successful Facial Recognition")
-                msg.setText(f"\nHello {name}!\n\n\nNote: If you wish to recognize another face, click 'Recognize Face' again to start a new session.")
+                msg.setText(f"<span style='color:#022052;'><br><br><b>Hello {name}!</b></span><br><br><br>"
+                            "<span style='color:#022052;'><b>Note:</b> If you wish to recognize another face, "
+                            "click <b>'Recognize Face'</b> again to start a new session.</span>")
                 msg.setStyleSheet("color: #022052;")
 
                 face_label = QLabel()
