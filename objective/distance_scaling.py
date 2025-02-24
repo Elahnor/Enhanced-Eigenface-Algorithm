@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMessageBox, QLabel
 from objective.lbp_histogram import detect_occlusion, is_real_face
 from utility.calculation import calculate_confidence_level, get_scaling_factor_for_distance
 from utility.get_info import get_all_key_name_pairs
+from objective.lbp_histogram import detect_occlusion, is_real_face
 
 def resize_image_for_display(image, width=200):
     aspect_ratio = image.shape[1] / image.shape[0]
@@ -90,7 +91,10 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
 
             return recognition_times
     
-    if len(faces) == 1 and (30 <= distance <= 60):
+        rect_color = (0, 255, 0)
+        cv2.rectangle(self.image, (x, y), (x + w, y + h), rect_color, 2)
+    
+    if self.eigen_algo_radio.isChecked():
         rect_color = (0, 255, 0)
         cv2.rectangle(self.image, (x, y), (x + w, y + h), rect_color, 2)
 
