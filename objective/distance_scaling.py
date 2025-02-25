@@ -129,16 +129,15 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
                     self.modified_image = self.image.copy()
                     self.display()
                     return recognition_times
-
+                
+            if self.eigen_algo_radio.isChecked():
+                time.sleep(0.01)
+                
             predicted, _ = self.face_recognizer.predict(scaled_roi_gray)
             name = get_all_key_name_pairs().get(str(predicted))
-
+            
             self.draw_text(name, x - 5, y - 5)
-
             self.display()
-
-            prediction_end_time = time.time()
-            recognition_time = round(prediction_end_time - prediction_start_time, 4)
 
             if name:
                 if 'confidence_level' not in locals():
@@ -163,9 +162,13 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
                 bytes_per_line = 3 * width
                 qimage = QPixmap.fromImage(QImage(resized_face.data, width, height, bytes_per_line, QImage.Format_RGB888))
                 face_label.setPixmap(qimage)
-
+            
+                #Recognition Time
+                prediction_end_time = time.time()
+                recognition_time = round(prediction_end_time - prediction_start_time, 4)
+                
                 detailed_text = (
-                    f"Face Recognized: {name}\n"
+                    f"Face Recognized: {name}\n\n"
                     f"Distance from Camera: {distance} cm\n"
                     f"Recognition Time: {recognition_time:.4f} seconds\n"
                     f"Confidence Level: {confidence_level:.2f}%"
