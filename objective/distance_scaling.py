@@ -60,7 +60,7 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
             self.display()
             return recognition_times
 
-        #Face Occlusion Detection
+        # Face Occlusion Detection
         eye_cascade = cv2.CascadeClassifier('xml/eye.xml')
         nose_cascade = cv2.CascadeClassifier('xml/nose.xml')
         mouth_cascade = cv2.CascadeClassifier('xml/mouth.xml')
@@ -146,47 +146,10 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
                     else:
                         confidence_level = calculate_confidence_level(distance, enhanced=False)
 
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Information)
-                msg.setWindowTitle("Successful Facial Recognition")
-                msg.setText(f"<span style='color:#022052;'><br><br><b>Hello {name}!</b></span><br><br><br>"
-                            "<span style='color:#022052;'><b>Note:</b> If you wish to recognize another face, "
-                            "click <b>'Recognize Face'</b> again to start a new session.</span>")
-                msg.setStyleSheet("color: #022052;")
-
-                face_label = QLabel()
-                recognized_face = cv2.cvtColor(roi_color, cv2.COLOR_BGR2RGB)
-                resized_face = resize_image_for_display(recognized_face, width=200)
-
-                height, width, channel = resized_face.shape
-                bytes_per_line = 3 * width
-                qimage = QPixmap.fromImage(QImage(resized_face.data, width, height, bytes_per_line, QImage.Format_RGB888))
-                face_label.setPixmap(qimage)
-            
-                #Recognition Time
+                # Print details in terminal
                 prediction_end_time = time.time()
                 recognition_time = round(prediction_end_time - prediction_start_time, 4)
-                
-                detailed_text = (
-                    f"Face Recognized: {name}\n\n"
-                    f"Distance from Camera: {distance} cm\n"
-                    f"Recognition Time: {recognition_time:.4f} seconds\n"
-                    f"Confidence Level: {confidence_level:.2f}%"
-                )
-                msg.setDetailedText(detailed_text)
-
-                msg.setStandardButtons(QMessageBox.Ok)
-                msg.setWindowIcon(QIcon("icon/AppIcon.png"))
-                msg.setIconPixmap(qimage)
-
-                msg.exec_()
-
-                self.stop_timer()
-                self.image = cv2.imread("icon/TitleScreen.png", 1)
-                self.modified_image = self.image.copy()
-                self.display()
-                self.recognize_face_btn.setChecked(False)
-                self.recognize_face_btn.setText("Recognize Face")
+                print(f"Face Recognized: {name}, Distance: {distance} cm, Confidence: {confidence_level:.2f}%, Recognition Time: {recognition_time:.4f} seconds")
 
             recognition_times.append(recognition_time)
 
