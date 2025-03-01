@@ -30,18 +30,3 @@ def get_faces(image, face_classifier):
     min_size = (100, 100)
 
     return face_classifier.detectMultiScale(get_gray_image(image), scaleFactor=scale_factor, minNeighbors=min_neighbors, minSize=min_size)
-
-def get_smiles(roi_gray, smile_classifier):
-    scale_factor = 1.7
-    min_neighbors = 22
-    min_size = (25, 25)
-
-    return smile_classifier.detectMultiScale(roi_gray, scaleFactor=scale_factor, minNeighbors=min_neighbors, minSize=min_size)
-
-def get_eyes(roi_gray, eye_classifier):
-    #Detects eyes in the region of interest (ROI)
-    scale_factor = 1.1
-    min_neighbors = 6
-    min_size = (30, 30)
-
-    return eye_classifier.detectMultiScale(roi_gray, scaleFactor=scale_factor, minNeighbors=min_neighbors)

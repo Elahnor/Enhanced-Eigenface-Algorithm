@@ -5,10 +5,11 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
 
 from utility.menu_info import MenuInfo
-from actions.generate_dataset import generate, save_dataset
+from actions.generate_dataset import generate
 from actions.train_dataset import train_dataset
 from actions.recognize_face import read_dataset, recognize
-from utility.get_info import get_labels_and_faces, get_gray_image, get_faces, get_smiles, get_eyes
+from utility.saved_dataset import save_dataset
+from utility.get_info import get_labels_and_faces, get_gray_image, get_faces
 from utility.select_algo import algorithm_radio_changed, update_recognizer, assign_algorithms
 from utility.about_image import display, update_image, pix_image, resize_image
 from utility.timer import Timer
@@ -20,16 +21,15 @@ class EFR(QMainWindow):
         super(EFR, self).__init__()
         loadUi("mainwindow.ui", self)
         
-        # Classifiers, frontal face, eyes and smiles.
-        self.face_classifier = cv2.CascadeClassifier("classifiers/frontalface_default.xml") 
-        self.eye_classifier = cv2.CascadeClassifier("classifiers/eye.xml")
-        self.smile_classifier = cv2.CascadeClassifier("classifiers/smile.xml")
+        # Classifier for frontal face
+        self.face_classifier = cv2.CascadeClassifier("xml/frontalface_default.xml") 
         
         # Variables
         self.camera_id = 0
         self.dataset_per_subject = 20
         self.ret = False
         self.trained_dataset = 0
+        self.current_path = None
 
         self.image = cv2.imread("icon/TitleScreen.png", 1)
         self.modified_image = self.image.copy()
@@ -53,11 +53,6 @@ class EFR(QMainWindow):
         # Timer instance
         self.timer_manager = Timer(self)
        
-        # Rectangle
-        self.face_rect_radio.setChecked(True)
-        self.eye_rect_radio.setChecked(False)
-        self.smile_rect_radio.setChecked(False)
-        
         # Events
         self.generate_dataset_btn.clicked.connect(self.generate)
         self.train_dataset_btn.clicked.connect(self.train)
@@ -84,7 +79,7 @@ class EFR(QMainWindow):
         generate(self)
     
     def save_dataset(self):
-        save_dataset(self)
+        save_dataset(self)  # Call save_dataset from saved_dataset.py
     
     def train(self):
         train_dataset(self)
@@ -106,20 +101,12 @@ class EFR(QMainWindow):
     def get_faces(self):  
         faces = get_faces(self.image, self.face_classifier)
         return faces
-
-    def get_smiles(self, roi_gray): 
-        smiles = get_smiles(roi_gray, self.smile_classifier)
-        return smiles
-
-    def get_eyes(self, roi_gray):
-        eyes = get_eyes(roi_gray, self.eye_classifier)
-        return eyes
         
     #ALGORITHMS SECTION
     def algorithm_radio_changed(self):      
         algorithm_radio_changed(self)
 
-    def update_recognizer(self):                                
+    def update_recognizer(self):                                 
         update_recognizer(self)
         
     def assign_algorithms(self):        
@@ -153,7 +140,7 @@ class EFR(QMainWindow):
         draw_text(self.image, text, x, y, font_size, color)
         
     def draw_rectangle(self, faces):
-        draw_rectangle(self, self.image, faces, self.enhanced_eigen_algo_radio, self.eigen_algo_radio, self.recog_time_checkbox)
+        draw_rectangle(self, self.image, faces, self.enhanced_eigen_algo_radio, self.eigen_algo_radio)
             
 if __name__ == "__main__":
     app = QApplication(sys.argv)

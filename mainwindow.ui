@@ -76,191 +76,43 @@
             }
         </string>
     </property>
-    <widget class="QGroupBox" name="groupBox_4">
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>475</y>
-                <width>150</width>
-                <height>131</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>METRICS:</string>
-        </property>
-        <property name="styleSheet">
-            <string>
-            QGroupBox {
-                font-weight: bold;
-                color: #022052;
-            }
-            </string>
-        </property>
-        <property name="flat">
-            <bool>false</bool>
-        </property>
-        <property name="checkable">
-            <bool>false</bool>
-        </property>
-        <widget class="QCheckBox" name="infe_time_checkbox">
-            <property name="geometry">
-                <rect>
-                    <x>8</x>
-                    <y>90</y>
-                    <width>150</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Inference Time</string>
-            </property>
-            <property name="styleSheet">
-                <string>
-                    QCheckBox {
-                        color: #022052;
-                    }
-                </string>
-            </property>
-        </widget>
-        <widget class="QCheckBox" name="predict_confidence_checkbox">
-            <property name="geometry">
-                <rect>
-                    <x>8</x>
-                    <y>60</y>
-                    <width>150</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Confidence Level</string>
-            </property>
-            <property name="styleSheet">
-                <string>
-                    QCheckBox {
-                        color: #022052;
-                    }
-                </string>
-            </property>
-        </widget>
-        <widget class="QCheckBox" name="recog_time_checkbox">
-            <property name="geometry">
-                <rect>
-                    <x>8</x>
-                    <y>30</y>
-                    <width>150</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Recognition Time</string>
-            </property>
-            <property name="styleSheet">
-                <string>
-                    QCheckBox {
-                        color: #022052;
-                    }
-                </string>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>330</y>
-       <width>150</width>
-       <height>131</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>PART OF THE FACE:</string>
-     </property>
-      <property name="styleSheet">
+    <widget class="QLabel" name="credits_label">
+      <property name="geometry">
+        <rect>
+          <x>10</x>
+          <y>385</y>
+          <width>150</width>
+          <height>200</height>
+        </rect>
+      </property>
+      <property name="text">
         <string>
-        QGroupBox {
-            font-weight: bold;
-            color: #022052;
-        }
+          <![CDATA[
+          <br><br>
+          <b style="color: #022052;">PLM - Pamantasan ng Lungsod ng Maynila</b><br><br>
+          <b style="color: #022052;">CISTM - BSCS</b><br><br>
+          <b style="color: #022052;">Creators</b>:<br>Hale I. Casison<br>Chloe Gwyneth S. Upaga<br><br>
+          <span style="color: #022052;">© 2025 PLM-CISTM<br><br></span>
+          ]]>
         </string>
       </property>
-     <widget class="QRadioButton" name="smile_rect_radio">
-      <property name="geometry">
-       <rect>
-        <x>8</x>
-        <y>90</y>
-        <width>130</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Mouth</string>
+      <property name="wordWrap">
+        <bool>true</bool>
       </property>
       <property name="styleSheet">
-          <string>
-            QRadioButton {
-              color: #022052;
-            }
-          </string>
+        <string>
+          QLabel {
+            color: #022052;
+            border: none;
+          }
+        </string>
       </property>
-      <attribute name="buttonGroup">
-       <string notr="true">rect_radio_group</string>
-      </attribute>
-     </widget>
-     <widget class="QRadioButton" name="eye_rect_radio">
-      <property name="geometry">
-       <rect>
-        <x>8</x>
-        <y>60</y>
-        <width>130</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Eyes</string>
-      </property>
-      <property name="styleSheet">
-          <string>
-            QRadioButton {
-              color: #022052;
-            }
-          </string>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">rect_radio_group</string>
-      </attribute>
-     </widget>
-     <widget class="QRadioButton" name="face_rect_radio">
-      <property name="geometry">
-       <rect>
-        <x>8</x>
-        <y>30</y>
-        <width>130</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Whole Face</string>
-      </property>
-      <property name="styleSheet">
-          <string>
-            QRadioButton {
-              color: #022052;
-            }
-          </string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-      <attribute name="buttonGroup">
-       <string notr="true">rect_radio_group</string>
-      </attribute>
-     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
         <rect>
         <x>10</x>
-        <y>15</y>
+        <y>30</y>
         <width>150</width>
         <height>160</height>
         </rect>
@@ -338,55 +190,55 @@
      </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_1">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>185</y>
-       <width>150</width>
-       <height>131</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>ALGORITHMS:</string>
-     </property>
-     <property name="styleSheet">
+      <property name="geometry">
+        <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>150</width>
+          <height>185</height>
+        </rect>
+      </property>
+      <property name="title">
+        <string>ALGORITHMS:</string>
+      </property>
+      <property name="styleSheet">
         <string>
-        QGroupBox {
-            font-weight: bold;
-            color: #022052;
-        }
+          QGroupBox {
+              font-weight: bold;
+              color: #022052;
+          }
         </string>
       </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
-     </property>
-     <widget class="QRadioButton" name="enhanced_eigen_algo_radio">
-      <property name="geometry">
-       <rect>
-        <x>8</x>
-        <y>60</y>
-        <width>150</width>
-        <height>22</height>
-       </rect>
+      <property name="flat">
+        <bool>false</bool>
       </property>
-      <property name="text">
-       <string>Enhanced Eigenface</string>
+      <property name="checkable">
+        <bool>false</bool>
       </property>
-      <attribute name="buttonGroup">
-       <string notr="true">algo_radio_group</string>
-      </attribute>
-      <property name="styleSheet">
+      <widget class="QRadioButton" name="enhanced_eigen_algo_radio">
+        <property name="geometry">
+          <rect>
+            <x>8</x>
+            <y>60</y>
+            <width>150</width>
+            <height>22</height>
+          </rect>
+        </property>
+        <property name="text">
+          <string>Enhanced Eigenface</string>
+        </property>
+        <attribute name="buttonGroup">
+          <string notr="true">algo_radio_group</string>
+        </attribute>
+        <property name="styleSheet">
           <string>
             QRadioButton {
               color: #022052;
             }
           </string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="eigen_algo_radio">
+        </property>
+      </widget>
+      <widget class="QRadioButton" name="eigen_algo_radio">
         <property name="geometry">
           <rect>
             <x>8</x>
@@ -408,6 +260,30 @@
           <string>
             QRadioButton {
               color: #022052;
+            }
+          </string>
+        </property>
+      </widget>
+      <widget class="QLabel" name="note_label">
+        <property name="geometry">
+          <rect>
+            <x>8</x>
+            <y>90</y> 
+            <width>125</width>
+            <height>85</height>
+          </rect>
+        </property>
+        <property name="text">
+          <string>Note: Please Generate and Train Dataset for each Algorithm before Facial Recognition</string>
+        </property>
+        <property name="wordWrap">
+          <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+          <string>
+            QLabel {
+              color: #022052;
+              border: none;
             }
           </string>
         </property>
