@@ -74,10 +74,22 @@ def distance_scaling(self, roi_gray_original, roi_color, distance, x, y, w, h, r
 
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
-            msg.setText("<b>Please Try Again!</b><br><br>Ensure your entire face is <b>visible</b> with your <b>eyes facing the camera</b> and your <b>face positioned straight.</b>")
-            msg.setWindowTitle("Face Occlusion Detected.")
+            msg.setText("<font color='red'><b>Invalid Facial Recognition!</b><br><br>Potential Spoofing Attack is <b>IDENTIFIED!</b></font>")
+            msg.setWindowTitle("Facial Recognition Failed")
             msg.setWindowIcon(QIcon("icon/AppIcon.png"))
             msg.setStandardButtons(QMessageBox.Ok)
+            
+            full_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB) 
+            resized_image = resize_image_for_display(full_image, width=200)
+
+            height, width, channel = resized_image.shape
+            bytes_per_line = 3 * width
+            qimage = QPixmap.fromImage(QImage(resized_image.data, width, height, bytes_per_line, QImage.Format_RGB888))
+            
+            face_label = QLabel()
+            face_label.setPixmap(qimage)
+            msg.setInformativeText("<font color='red'>Note: This image and the captured frame on the screen illustrate the cause of the facial recognition failure which is due to an identified face occlusion.</font>")
+            msg.setIconPixmap(qimage)
             msg.exec_()
 
             self.recognize_face_btn.setChecked(False)
