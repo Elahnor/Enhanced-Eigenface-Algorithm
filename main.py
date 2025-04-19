@@ -20,8 +20,7 @@ class EFR(QMainWindow):
     def __init__(self):
         super(EFR, self).__init__()
         loadUi("mainwindow.ui", self)
-        
-        # Classifier for frontal face
+
         self.face_classifier = cv2.CascadeClassifier("xml/frontalface_default.xml") 
         
         # Variables
